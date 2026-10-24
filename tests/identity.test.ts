@@ -22,7 +22,7 @@ test("resolves changed ABS episode IDs against parsed RSS GUID and preserves key
 	const resolver = new EpisodeResolver(async () => Buffer.from(xml));
 	const item = (id: string, guid: string | null) => ({ media: { feedURL: "https://EXAMPLE.com/feed?utm_campaign=x", episodes: [{ id, guid, title: "Episode title", publishedAt: Date.parse("2024-01-01T00:00:00Z"), enclosureURL: "https://cdn.example/ep.mp3?different=two", audioFile: { ino: 3, metadata: { size: 10, mtimeMs: 1 } } }] } });
 	const first = await resolver.resolve(item("abs-1", null));
-	const second = await resolver.resolve(item("abs-2", null));
+	const second = await resolver.resolve(item("abs-2", "abs-local-guid"));
 	assert.equal(first.showKey, "show-guid");
 	assert.equal(first.episodes[0].episodeKey, second.episodes[0].episodeKey);
 	assert.equal(first.episodes[0].id, "abs-1");

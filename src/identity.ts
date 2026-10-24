@@ -89,7 +89,7 @@ export class EpisodeResolver {
 				const date = typeof ep.publishedAt === "number" ? ep.publishedAt : null;
 				matches = title && date !== null ? feed.rows.filter(row => row.title === title && row.publishedAt === date) : [];
 			}
-			const guid = typeof ep.guid === "string" && ep.guid.trim() ? ep.guid : matches.length === 1 ? matches[0].guid : undefined;
+			const guid = matches.length === 1 && matches[0].guid ? matches[0].guid : typeof ep.guid === "string" && ep.guid.trim() ? ep.guid : undefined;
 			try { const key = episodeKey(show, guid, enclosure); return id ? [{ id, episodeKey: key, identity: fileIdentity(value) }] : []; }
 			catch { return []; }
 		});
