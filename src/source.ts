@@ -12,8 +12,9 @@ export const episodeSourceSchema = z.object({ id: z.string(), duration: z.number
 export async function downloadSource(stable: Stable, credential: Credential, itemId: string, episodeId: string, signal: AbortSignal, transport: Fetch = fetch) {
 	const token = await credential.get();
 	const item = await stable.item(itemId, token);
-	const media = z.object({ episodes: z.array(episodeSourceSchema) }).parse(item.media);
-	const episode = media.episodes.find(e => e.id === episodeId);
+	const episodes = z.object({ episodes: z.array(z.unknown()) }).parse(item.media).episodes;
+	const rawEpisode = episodes.find(value => typeof value === 'object' && value !== null && 'id' in value && value.id === episodeId);
+	const episode = rawEpisode === undefined ? undefined : episodeSourceSchema.parse(rawEpisode);
 	if (!episode) throw new HttpError(404, 'episode_not_found');
 	// getLibraryFile sends authorized bytes only; no playback/session/progress handler.
 	const path = `/api/items/${encodeURIComponent(itemId)}/file/${encodeURIComponent(String(episode.audioFile.ino))}`;
