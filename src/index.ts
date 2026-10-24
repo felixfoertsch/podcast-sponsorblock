@@ -52,7 +52,7 @@ async function main() {
 			store.observeResolved(job.itemId, await resolver.resolve(current));
 			if (store.resolution(job.itemId, job.episodeId)?.identity !== identity) throw new Error('source_changed');
 			if (bounded.aborted || !store.enabled(job.itemId)) throw new Error('cancelled');
-			store.setContent(source.sha256, { status: ['candidates', 'no_difference'].includes(result.status) ? result.status : `failed:${result.reason ?? result.status}`, segments: result.segments });
+			store.setContent(source.sha256, { status: ['candidates', 'no_difference'].includes(result.status) ? result.status : `failed:${result.reason ?? result.status}`, segments: result.segments.map(({ start, end }) => ({ start, end })) });
 		} finally { await source.cleanup(); }
 	});
 	if (env.PSB_SCHEDULER_ENABLED === '1') store.startScheduler();
