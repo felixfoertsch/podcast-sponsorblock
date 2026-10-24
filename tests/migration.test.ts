@@ -42,5 +42,7 @@ test("apply bridges runtime, gates source hashes, rolls back debug collisions", 
 		assert.equal(migrateCopy(input,shows,episodes,db,Buffer.from('one'),options).repeated,true);
 		const store=new Store(path);assert.equal(store.analysis('new')['new-e'].applicable,false);store.verifySource('new','new-e','a'.repeat(64));assert.equal(store.analysis('new')['new-e'].applicable,true);store.verifySource('new','new-e','b'.repeat(64));assert.deepEqual(store.analysis('new')['new-e'].segments,[]);assert.equal(store.jobs('new')[0].status,'queued');await store.close();
 		assert.equal(db.pragma('integrity_check')[0].integrity_check,'ok');assert.equal(db.pragma('foreign_key_check').length,0);
+		const collision=openMigrationDatabase(join(dir,'other.sqlite'));
+		try { assert.throws(()=>migrateCopy(input,shows,episodes,collision,Buffer.from('two'),options),/debug_collision/); assert.equal(collision.prepare('SELECT count(*) n FROM psb_migration_receipts').get().n,0); assert.equal(collision.prepare('SELECT count(*) n FROM results').get().n,0); } finally { collision.close(); }
 	}finally{db.close();rmSync(dir,{recursive:true,force:true});}
 });

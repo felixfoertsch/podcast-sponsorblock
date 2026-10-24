@@ -22,4 +22,21 @@ Read-only API catalogs: stable service login and experiment `ABS_URL`/`ABS_API_K
 
 Stand-in match rate: 3247/3466 = 93.68%; conflicts remain archived rather than guessed. All 21 shows uniquely match. Zero stable matches expected: podcasts not provisioned yet. Rehearsals import into disposable sidecar SQLite only, with all source results non-applicable. Scratch reports: `/private/tmp/opencode/migration-input/{stable,experiment}-report.json`.
 
-Open migration gaps: production CLI still requires hardening for tar member/symlink validation and complete v1/v2 hash validation; migration tables currently archive records but do not bridge mapped consent/results/corpus into runtime tables or rewrite/import debug routes. No cutover import performed. `scripts/rehearse-migration.cjs` reproduces measured archive/idempotency evidence; `bin/migrate-experiment` remains dry-run-only until those gaps close.
+## Apply rehearsal
+
+`bin/migrate-experiment --apply` now validates all tar members before extraction (rejects links/devices/absolute/traversal paths; bounded member count and sizes), verifies evidence hashes, converts v1 audio to frame evidence, bridges runtime consent/results/corpus, maps debug paths, and archives unmapped records. Offline SQLite transaction includes runtime, archive, receipt, and attached debug database; collision test proves rollback. Default remains dry-run. Receipt binds archive hash, target catalog hash, and server identity.
+
+Copied-backup apply against experiment catalog into fresh disposable SQLite files:
+
+| Check | First apply | Second apply |
+|---|---:|---:|
+| Matched episodes | 3247 | 3247 |
+| Conflicts / unmatched | 46 / 173 | 46 / 173 |
+| Completed results imported | 1918 | 0 |
+| Runtime corpus versions imported | 2124 | 0 |
+| Corpus versions archived | 2182 | unchanged |
+| Debug records imported / archived | 4 / 25 | 0 / 0 new |
+| Repeated receipt | false | true |
+| Integrity / foreign-key violations | ok / 0 | ok / 0 |
+
+Migration digest `5de72cd1f0e7a306e8f2708463dcd7237503dde1300b242a95654df6ea73b94c`; archive SHA-256 unchanged from above. Imported results start with `applicable=0`. `/analysis` fetches stable source bytes before activation; different hash invalidates segments and queues reanalysis. Incomplete/failed legacy analyses remain archived, never promoted to `no_difference`. No stable import, public routing, or cutover performed.
