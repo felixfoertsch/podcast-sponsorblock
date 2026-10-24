@@ -53,7 +53,7 @@ export function createFeedRoutes(stable: Stable, feedTransport = { async fetch(u
 				const sources: FeedSource[] = [];
 				for (const row of response.results) {
 					if (row.mediaType && row.mediaType !== 'podcast') continue;
-					try { const item = await stable.item(row.id, token); const media = mediaSchema.parse(item.media); items.set(row.id, media); sources.push({ libraryItemId: row.id, podcastId: row.id, feedURL: feedUrl(media), podcast: item }); } catch { /* No access, no disclosure. */ }
+					try { const item = await stable.item(row.id, token); const media = mediaSchema.parse(item.media); items.set(row.id, media); sources.push({ libraryItemId: row.id, podcastId: row.id, feedURL: feedUrl(media), podcast: media }); } catch { /* No access, no disclosure. */ }
 				}
 				return sources;
 			},

@@ -18,15 +18,21 @@ test('stock enclosure shape matches feed summary and recent downloaded rows',asy
 		if(parsed.pathname==='/api/libraries/lib/items')return Response.json({results:[{id:'i',mediaType:'podcast'}]});
 		throw new Error('unexpected');
 	});
-	const feedTransport={async fetch(){return {episodes:[{title:'Finished episode',guid:null,enclosure:{url:'https://cdn.example/episode.mp3'}}]};}};
+	let includeFeedOnly=true;
+	const feedTransport={async fetch(){return {episodes:[{title:'Finished episode',guid:null,enclosure:{url:'https://cdn.example/episode.mp3'}},...(includeFeedOnly?[{title:'Feed only',guid:'new',enclosure:{url:'https://cdn.example/new.mp3'}}]:[])]};}};
 	const store=new Store(':memory:');const app=createApp(stable,store).route('/',createFeedRoutes(stable,feedTransport));
 	try{
 		const summary=await app.request('/api/podcasts/i/episode-summary',{headers:{Authorization:'Bearer user'}});
-		assert.deepEqual(await summary.json(),{total:1,unplayed:0,source:'feed'});
+		assert.deepEqual(await summary.json(),{total:2,unplayed:1,source:'feed'});
 		const recent=await app.request('/api/libraries/lib/recent-episodes',{headers:{Authorization:'Bearer user'}});
 		assert.equal(recent.status,200);
 		const episodes=(await recent.json() as {episodes:{downloaded:boolean}[]}).episodes;
-		assert.equal(episodes.length,2);
+		assert.equal(episodes.length,3);
 		assert.equal(episodes.filter(ep=>ep.downloaded).length,2);
+		includeFeedOnly=true;
+		const refreshed=await app.request('/api/libraries/lib/recent-episodes',{headers:{Authorization:'Bearer user'}});
+		const feedOnly=(await refreshed.json() as {episodes:{downloaded:boolean,podcast:unknown}[]}).episodes.find(ep=>!ep.downloaded);
+		assert.ok(feedOnly);
+		assert.deepEqual(feedOnly.podcast,{metadata:{feedUrl:'https://feed.example/rss'},episodes:[{id:'e',title:'Finished episode',enclosure:{url:'https://cdn.example/episode.mp3',length:123,type:'audio/mpeg'}},{id:'legacy',title:'Legacy',enclosureURL:'https://cdn.example/legacy.mp3'}]});
 	}finally{store.close();}
 });
