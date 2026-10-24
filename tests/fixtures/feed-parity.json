@@ -1,0 +1,24 @@
+{
+  "provenance": {
+    "fork": "audiobookshelf",
+    "commit": "bcfd59cc49e8195b989d3ffda7c032f0fe34a5ea",
+    "source": "server/controllers/LibraryController.js#getRecentEpisodes and PodcastController.js#getEpisodeSummary"
+  },
+  "recent": {
+    "downloaded": [
+      { "id": "downloaded-1", "podcastId": "podcast-1", "title": "Downloaded newest", "enclosure": { "url": "https://media.example/one.mp3" }, "enclosureURL": "https://media.example/one.mp3", "guid": "guid-1", "publishedAt": 300, "duration": 60, "libraryItemId": "item-1", "downloaded": true, "podcast": { "id": "podcast-1" } }
+    ],
+    "feeds": [
+      { "guid": "guid-1", "title": "Downloaded duplicate", "url": "https://media.example/one.mp3", "publishedAt": 300, "durationSeconds": 60 },
+      { "guid": "guid-2", "title": "Feed newest", "url": "https://media.example/two.mp3", "publishedAt": 200, "durationSeconds": 120 },
+      { "guid": "guid-2", "title": "Duplicate guid", "url": "https://media.example/duplicate.mp3", "publishedAt": 150, "durationSeconds": 90 },
+      { "guid": "guid-3", "title": "Feed oldest", "url": "https://media.example/three.mp3", "publishedAt": 100, "durationSeconds": 30 }
+    ],
+    "expected": ["downloaded-1", "feed:item-1:guid-2", "feed:item-1:guid-3"],
+    "limit": 50,
+    "page": 0,
+    "feedUnavailable": false,
+    "feedTruncated": false
+  },
+  "summary": { "total": 4, "unplayed": 3, "source": "feed" }
+}

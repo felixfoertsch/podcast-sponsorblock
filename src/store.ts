@@ -72,8 +72,8 @@ export class Store {
 			this.invalidateSource(itemId, episodeId, "");
 			return;
 		}
-		const result = this.db.prepare("SELECT source_sha,segments FROM results WHERE server_id=? AND item_id=? AND episode_id=?").get(this.serverId,itemId,episodeId) as {source_sha:string;segments:string} | undefined;
-		if (result && result.source_sha.toLowerCase() === sourceSha256.toLowerCase() && this.enabled(itemId)) {
+		const result = this.db.prepare("SELECT source_sha,segments,status,version FROM results WHERE server_id=? AND item_id=? AND episode_id=?").get(this.serverId,itemId,episodeId) as {source_sha:string;segments:string;status:string;version:string} | undefined;
+		if (result && ['complete','candidates','no_difference'].includes(result.status === 'stale' && result.version === 'migration-v1' ? 'complete' : result.status) && result.source_sha.toLowerCase() === sourceSha256.toLowerCase() && this.enabled(itemId)) {
 			const segments = JSON.parse(result.segments) as Segment[];
 			this.db.prepare("UPDATE results SET applicable=1,status=? WHERE server_id=? AND item_id=? AND episode_id=?").run(segments.length ? "candidates" : "no_difference",this.serverId,itemId,episodeId);
 			return;
