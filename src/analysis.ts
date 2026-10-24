@@ -4,7 +4,6 @@ import { analyzeCandidates, type CandidateTransport, type CandidateResult } from
 export { transport as candidateTransport, catalogEndpoint, catalogResults, request } from "./analyzerTransport";
 
 export type AnalysisJob = {
-	serverId: string;
 	itemId: string;
 	episodeId: string;
 	fileId: string;

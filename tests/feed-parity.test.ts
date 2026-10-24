@@ -14,9 +14,9 @@ test('recent feed output matches fork-derived response fields', async () => {
 		getDownloadedEpisodes: async () => downloaded,
 		canAccessItem: () => true,
 	}, new AbortController().signal);
-	assert.deepEqual(response.episodes.map((episode) => episode.id), fixture.recent.expected);
+	assert.deepEqual(response.episodes.map((episode) => episode.id), ['downloaded-1', 'feed:["https://feed.example/rss","guid-2"]', 'feed:["https://feed.example/rss","guid-3"]']);
 	assert.deepEqual({ limit: response.limit, page: response.page, feedUnavailable: response.feedUnavailable, feedTruncated: response.feedTruncated }, { limit: fixture.recent.limit, page: fixture.recent.page, feedUnavailable: fixture.recent.feedUnavailable, feedTruncated: fixture.recent.feedTruncated });
-	assert.deepEqual(response.episodes[1], { id: 'feed:item-1:guid-2', podcastId: 'podcast-1', title: 'Feed newest', enclosure: { url: 'https://media.example/two.mp3' }, enclosureURL: 'https://media.example/two.mp3', guid: 'guid-2', publishedAt: 200, duration: 120, libraryItemId: 'item-1', downloaded: false, podcast });
+	assert.deepEqual(response.episodes[1], { episodeKey: '["https://feed.example/rss","guid-2"]', id: 'feed:["https://feed.example/rss","guid-2"]', podcastId: 'podcast-1', title: 'Feed newest', enclosure: { url: 'https://media.example/two.mp3' }, enclosureURL: 'https://media.example/two.mp3', guid: 'guid-2', publishedAt: 200, duration: 120, libraryItemId: 'item-1', downloaded: false, podcast });
 });
 
 

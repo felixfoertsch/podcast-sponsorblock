@@ -1,24 +1,31 @@
-import { test } from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Store } from '../src/store.js';
-test('candidate classification survives persistence; disabled source never returns segments',()=>{
-	const store=new Store(':memory:');
-	try{
-		store.setEnabled('i',true);
-		store.setResult('i','e',{status:'candidates',version:'1',sourceSha256:'a'.repeat(64),segments:[{start:1,end:2}],adAnalysisEnabled:true,applicable:true});
-		assert.equal(store.analysis('i').e.status,'candidates');
-		store.setEnabled('i',false);
-		assert.deepEqual(store.analysis('i').e.segments,[]);
-		assert.throws(()=>store.setResult('i','e',{status:'candidates',version:'1',sourceSha256:'b'.repeat(64),segments:[],adAnalysisEnabled:true,applicable:true}),/analysis_disabled/);
-	}finally{store.close();}
+
+test('disabled show hides cached content while enabled show can use shared content', () => {
+	const store = new Store(':memory:');
+	try {
+		const sha = 'a'.repeat(64);
+		store.observeResolved('first', { showKey: 'show-a', episodes: [{ id: 'episode', episodeKey: 'one', identity: 'file' }] });
+		store.observeResolved('second', { showKey: 'show-b', episodes: [{ id: 'episode', episodeKey: 'two', identity: 'file' }] });
+		store.cacheHash('first', 'episode', 'file', sha);
+		store.setContent(sha, { status: 'candidates', segments: [{ start: 2, end: 3 }] });
+		store.setEnabled('first', true);
+		store.setEnabled('second', false);
+		assert.deepEqual(store.analysis('first').episode?.segments, [{ start: 2, end: 3 }]);
+		assert.equal(store.analysis('second').episode?.applicable, false);
+		assert.deepEqual(store.analysis('second').episode?.segments, []);
+	} finally { store.close(); }
 });
-test('source verification never promotes inconclusive analysis to no_difference',()=>{
-	const store=new Store(':memory:');
-	try{
-		store.setEnabled('i',true);
-		store.setResult('i','e',{status:'inconclusive',version:'1',sourceSha256:'a'.repeat(64),segments:[],adAnalysisEnabled:true,applicable:false});
-		store.verifySource('i','e','a'.repeat(64));
-		assert.equal(store.analysis('i').e.applicable,false);
-		assert.equal(store.jobs('i')[0].status,'queued');
-	}finally{void store.close();}
+
+test('changed resolution cancels prior job identity', () => {
+	const store = new Store(':memory:');
+	try {
+		store.observeResolved('item', { showKey: 'show', episodes: [{ id: 'episode', episodeKey: 'old', identity: 'file-old' }] });
+		store.setEnabled('item', true);
+		store.enqueue('item', 'episode');
+		store.observeResolved('item', { showKey: 'show', episodes: [{ id: 'episode', episodeKey: 'new', identity: 'file-new' }] });
+		assert.deepEqual(store.jobs('item'), []);
+		assert.throws(() => store.cacheHash('item', 'episode', 'file-old', 'a'.repeat(64)), /source_changed/);
+	} finally { store.close(); }
 });

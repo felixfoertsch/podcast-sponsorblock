@@ -7,10 +7,12 @@ export const enqueueRequestSchema = z.object({}).strict();
 export const enqueueSchema = z.object({ queued: z.boolean() });
 export const summarySchema = z.object({ total: z.number().int().nonnegative(), unplayed: z.number().int().nonnegative(), source: z.enum(['feed','downloaded']) });
 export const recentFeedSchema = z.object({ episodes: z.array(z.record(z.string(),z.unknown())), limit: z.number().int().min(1).max(200), page: z.number().int().nonnegative(), feedUnavailable:z.boolean(), feedTruncated:z.boolean() }).passthrough();
-export const corpusVersionSchema = z.object({ version: z.literal(2), versionId: z.string(), itemId: z.string(), episodeId: z.string(), algorithm: z.string(), sha256: z.string(), fingerprintSha256: z.string(), provider: z.string(), route: z.string(), collectedAt: z.string(), duration: z.number(), audioBytes: z.number().int(), fingerprintBytes: z.number().int(), frameBytes: z.number().int(), frameSha256: z.string(), format: z.literal('mpeg-frames-v1') });
+export const corpusVersionSchema = z.object({ version: z.literal(2), versionId: z.string(), showKey: z.string(), episodeKey: z.string(), algorithm: z.string(), sha256: z.string(), fingerprintSha256: z.string(), provider: z.string(), route: z.string(), collectedAt: z.string(), duration: z.number(), audioBytes: z.number().int(), fingerprintBytes: z.number().int(), frameBytes: z.number().int(), frameSha256: z.string(), format: z.literal('mpeg-frames-v1') });
 export const corpusSchema = z.object({ version:z.literal(2),count:z.number().int().nonnegative(),totalBytes:z.number().int().nonnegative(),limitBytes:z.number().int().positive(),collectionPaused:z.boolean(),reason:z.string().nullable(),versions:z.array(corpusVersionSchema) });
-export const jobStatusSchema = z.object({ jobs:z.array(z.object({id:z.number().int(),kind:z.enum(['analysis','verify']),identity:z.string().nullable(),itemId:z.string(),episodeId:z.string(),status:z.string(),attempts:z.number().int().nonnegative()}).passthrough()) });
+export const jobStatusSchema = z.object({ jobs:z.array(z.object({id:z.number().int(),analysisRuns:z.number().int().nonnegative(),priority:z.number().int().min(0).max(1),itemId:z.string(),episodeId:z.string(),status:z.string(),attempts:z.number().int().nonnegative()}).passthrough()) });
+export const contentSchema = z.object({ detectorVersion:z.string(),status:z.string(),segments:z.array(segmentSchema) });
 export const paths = {
+	content:'/api/content/:sha256',
 	analysis:'/api/items/:itemId/analysis', status:'/api/items/:itemId/analysis/status',
 	consent:'/api/podcasts/:itemId/ad-analysis', enqueue:'/api/podcasts/:itemId/episode/:episodeId/ad-analysis',
 	corpus:'/api/podcasts/:itemId/episode/:episodeId/ad-analysis/corpus',

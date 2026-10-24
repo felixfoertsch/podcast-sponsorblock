@@ -74,12 +74,13 @@ export interface CandidateTransport {
 	candidates(provider: "apple" | "gpodder", item: CatalogItem, signal: AbortSignal): Promise<unknown>;
 }
 
-export async function analyzeCandidates(input: { sourcePath: string; duration: number; episodeId: string; itemId: string; episode: AnalysisEpisode; item: CatalogItem; transport: CandidateTransport; corpus: AnalysisCorpus; signal: AbortSignal; env?: NodeJS.ProcessEnv }): Promise<CandidateResult> {
+export async function analyzeCandidates(input: { sourcePath: string; sourceSha256?: string; duration: number; episodeId: string; itemId: string; episode: AnalysisEpisode; item: CatalogItem; transport: CandidateTransport; corpus: AnalysisCorpus; signal: AbortSignal; env?: NodeJS.ProcessEnv }): Promise<CandidateResult> {
 	const { sourcePath, duration, episode, item, transport, signal } = input;
 	const env = input.env || process.env;
 	const sourceStat = await stat(sourcePath);
 	if (!sourceStat.isFile() || sourceStat.size > MAX_AUDIO_BYTES) throw new Error("audio_size_limit");
-	const sourceHash = hash(await readFile(sourcePath));
+	if (input.sourceSha256 !== undefined && !/^[a-f0-9]{64}$/.test(input.sourceSha256)) throw new Error('invalid_source_hash');
+	const sourceHash = input.sourceSha256 ?? hash(await readFile(sourcePath));
 	const dir = await mkdtemp(join(tmpdir(), "psb-dai-"));
 	const out: CandidateResult = { status: "running", reason: null, segments: [], samples: [], catalogs: [], sourceSha256: sourceHash };
 	try {
@@ -126,7 +127,7 @@ export async function analyzeCandidates(input: { sourcePath: string; duration: n
 					await writeFile(samplePath, response.data, { flag: "wx" });
 					const variant = await fingerprint(samplePath, dir, `variant${extras}`, null, signal, env);
 					const fpHash = hash(JSON.stringify(variant));
-					const retained = input.corpus.retain({ itemId: input.itemId, episodeId: input.episodeId, data: response.data, fingerprint: variant, duration: variant.duration || 0, provider, route: "direct" });
+					const retained = input.corpus.retain({ showKey: input.itemId, episodeKey: input.episodeId, data: response.data, fingerprint: variant, duration: variant.duration || 0, provider, route: "direct" });
 					const sample = { origin: provider, route: "direct", requestAttempt: extras, repeatedUrl: urls.has(url), sha256: hash(response.data), fingerprintSha256: fpHash, collectionStatus: retained.status, versionId: retained.versionId, status: "compared" };
 					urls.add(url); urls.add(response.url); out.samples.push(sample);
 					fingerprints.add(fpHash);

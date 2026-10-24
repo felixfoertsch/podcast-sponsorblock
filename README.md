@@ -12,7 +12,7 @@ Browser sends bearer token; sidecar validates through stable `/api/me`. No brows
 
 Container runs as non-root `node`; listen on container port `3000` (override with `PORT`). Set `PSB_STABLE_USERNAME` and `PSB_STABLE_PASSWORD`; `PSB_STABLE_URL` defaults to `https://audiobookshelf.felixfoertsch.de`. `PSB_DATA_DIR` defaults to `/data`; mount persistent writable storage there for sidecar SQLite state. Mount bounded writable `/tmp` tmpfs (the image uses `/tmp/psb` for temporary work). Use read-only root filesystem, drop all capabilities, and set CPU/memory/PID limits. Health probe: `GET /healthz` on port `3000` returns `{"status":"ok"}`. Do not mount stable media/config/metadata or Docker socket.
 
-Import backups with `bin/migrate-experiment --input BACKUP-TAR --stable-catalog JSON --database SQLITE`; add `--apply` only after reviewing dry-run results, and use `--debug-database SQLITE` when importing debug data. Keep `PSB_DATA_DIR` pointed at persistent volume. Back up sidecar data before upgrade; SQLite store upgrades schema on startup. Build-only extraction: no cutover or running-container changes.
+Fresh schema only; legacy runtime databases are rejected. Stop sidecar and verify a backup before replacing development data. No experiment import or schema migration remains.
 
 ## Deployment (private staging only)
 
@@ -22,14 +22,10 @@ Persistent `/data` holds `sidecar.sqlite` (runtime results and corpus blobs) and
 docker run --name podcast-sponsorblock --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 2g --cpus 2 --env-file /secure/psb.env -e PSB_SCHEDULER_ENABLED=0 -p 127.0.0.1:3000:3000 -v /srv/psb:/data --tmpfs /tmp:rw,nosuid,nodev,size=512m git.felixfoertsch.de/felixfoertsch/podcast-sponsorblock:main
 ```
 
-Offline migration needs Node, installed project dependencies, and Python 3. Stop sidecar before apply; back up both SQLite files. Default dry-run leaves destination untouched. Set `PSB_STABLE_URL` identically for migration and runtime (default stable URL above).
-
-```fish
-mise exec -- bin/migrate-experiment --input /backup/config-metadata.tar --stable-catalog /backup/catalog.json --database /srv/psb/sidecar.sqlite --debug-database /srv/psb/debug-overlay.sqlite --apply
-```
+On shared Docker network, use `PSB_STABLE_URL=http://audiobookshelf:80`. Plain HTTP is accepted only for this fixed internal service and port; external feed/media SSRF protections remain unchanged. Stable URL is transport configuration, never a data key.
 
 ## Checks
 
 `bun run check` runs strict TypeScript, Node tests and extracted Mocha suites. `node scripts/native-smoke.cjs` checks SQLite, ffmpeg and full-duration 125-second Chromaprint. `test-manifest.json` records source-suite dispositions; adaptation gaps remain explicit, not disguised by test counts.
 
-Migration consumes copied backup only; see `bin/migrate-experiment` and `migration-report.md`. `GET /analysis` never fetches audio: its existing ACL item response supplies `audioFile.ino`, `audioFile.metadata.size`, and `audioFile.metadata.mtimeMs`. Changed or unknown identity clears applicability and schedules durable low-priority `verify` work. Unchanged verified identity needs no download. Single worker verifies source hashes once per identity; mismatch schedules reanalysis only with consent. Queue holds at most 32 admitted jobs; analyses run first and may displace queued verification, which remains discoverable from stored pending results. Imported results drain through this queue even before a page view. Missing file identity fails closed. Post-analysis source re-download check remains enabled. Imported segments remain non-applicable until stable source SHA-256 matches. Never call `ComparisonCorpus.load()` on experiment source.
+Results use `(audio_sha256, detector_version)` only. Consent uses feed `podcast:guid` verbatim, otherwise normalized feed URL. Corpus uses this show key plus RSS guid, otherwise enclosure scheme/host/path. ABS IDs and file metadata live only in rebuildable local caches and job routing. A changed file identity hides results until hashing; identical bytes reuse results without detector work. The single worker hashes during download and rechecks content before analysis. Queue capacity is 32; explicit requests precede scheduler admissions, with one admission per show/pass. `GET /api/content/:sha256` requires stable authentication; item routes additionally prove requesting-user item access. Public sharing and federation remain deferred.

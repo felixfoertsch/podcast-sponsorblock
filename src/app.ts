@@ -4,7 +4,9 @@ import { z } from 'zod';
 import { Stable, HttpError, permitsAdminWrite, type User } from './stable.js';
 import type { Store } from './store.js';
 export type AuthEnv = { Variables: { token: string; user: User } };
-export function createApp(stable: Stable, store: Store, corpus?: { inventory(itemId: string, episodeId: string): unknown }) {
+import { EpisodeResolver } from './identity.js';
+export function createApp(stable: Stable, store: Store, corpus?: { inventory(showKey: string, episodeKey: string): unknown }, resolver = new EpisodeResolver()) {
+	const observe = async (itemId: string, token: string) => { const item = await stable.item(itemId, token); store.observeResolved(itemId, await resolver.resolve(item)); return item; };
 	const app = new Hono<AuthEnv>();
 	const writes = new Map<string, { start: number; count: number }>();
 	app.onError((error, c) => c.json({ error: error instanceof HttpError ? error.message : 'internal_error' }, error instanceof HttpError ? error.status as 401 : 500));
@@ -31,29 +33,35 @@ export function createApp(stable: Stable, store: Store, corpus?: { inventory(ite
 		}
 		await next();
 	});
+	// ponytail: public sharing and federation require an explicit decision; authenticated local reads only.
+	app.get('/api/content/:sha256', c => {
+		const sha = z.string().regex(/^[a-f0-9]{64}$/).safeParse(c.req.param('sha256'));
+		if (!sha.success) return c.json({ error: 'invalid_hash' }, 400);
+		const result = store.content(sha.data);
+		return result ? c.json(result) : c.json({ error: 'not_found' }, 404);
+	});
 	app.get('/api/items/:itemId/analysis', async c => {
 		const itemId=c.req.param('itemId');
-		const item=await stable.item(itemId,c.get('token'));
-		store.observeSources(itemId,item);
+		await observe(itemId,c.get('token'));
 		return c.json({episodes:store.analysis(itemId)});
 	});
 	app.get('/api/items/:itemId/analysis/status', async c => {
-		await stable.item(c.req.param('itemId'), c.get('token'));
+		await observe(c.req.param('itemId'), c.get('token'));
 		return c.json({ jobs: store.jobs(c.req.param('itemId')) });
 	});
 	app.get('/api/podcasts/:itemId/ad-analysis', async c => {
-		await stable.item(c.req.param('itemId'), c.get('token'));
+		await observe(c.req.param('itemId'), c.get('token'));
 		return c.json({ enabled: store.enabled(c.req.param('itemId')) });
 	});
 	app.post('/api/podcasts/:itemId/ad-analysis', async c => {
-		await stable.item(c.req.param('itemId'), c.get('token'));
+		await observe(c.req.param('itemId'), c.get('token'));
 		const body = z.object({ enabled: z.boolean() }).strict().safeParse(await c.req.json());
 		if (!body.success) return c.json({ error: 'invalid_body' }, 400);
 		store.setEnabled(c.req.param('itemId'), body.data.enabled);
 		return c.json(body.data);
 	});
 	app.post('/api/podcasts/:itemId/episode/:episodeId/ad-analysis', async c => {
-		const item = await stable.item(c.req.param('itemId'), c.get('token'));
+		const item = await observe(c.req.param('itemId'), c.get('token'));
 		const media = z.object({ episodes: z.array(z.object({ id: z.string() })) }).safeParse(item.media);
 		if (!media.success || !media.data.episodes.some(e => e.id === c.req.param('episodeId'))) return c.json({ error: 'episode_not_found' }, 404);
 		if (!z.object({}).strict().safeParse(await c.req.json()).success) return c.json({ error: 'invalid_body' }, 400);
@@ -63,9 +71,11 @@ export function createApp(stable: Stable, store: Store, corpus?: { inventory(ite
 	});
 	app.get('/api/podcasts/:itemId/episode/:episodeId/ad-analysis/corpus', async c => {
 		if (!permitsAdminWrite(c.get('token'), await stable.validate(c.get('token'), true))) return c.json({ error: 'forbidden' }, 403);
-		await stable.item(c.req.param('itemId'), c.get('token'));
+		await observe(c.req.param('itemId'), c.get('token'));
 		if (!corpus) return c.json({ collectionPaused: true, reason: 'corpus_unavailable' }, 503);
-		return c.json(corpus.inventory(c.req.param('itemId'), c.req.param('episodeId')));
+		const resolved = store.resolution(c.req.param('itemId'), c.req.param('episodeId'));
+		if (!resolved) return c.json({ error: 'episode_not_found' }, 404);
+		return c.json(corpus.inventory(resolved.showKey, resolved.episodeKey));
 	});
 	return app;
 }

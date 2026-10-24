@@ -9,7 +9,7 @@ test("SQLite corpus refuses entry beyond five versions and reports exact invento
 	const dir = await mkdtemp(join(tmpdir(), "psb-corpus-"));
 	const corpus = new AnalysisCorpus(join(dir, "corpus.sqlite"), 10 * 1024 * 1024 * 1024);
 	try {
-		const input = (n: number) => ({ itemId: "item", episodeId: "episode", data: Buffer.from(`audio-${n}`), fingerprint: Array.from({ length: 500 }, (_, i) => i + n * 1000), duration: 60, provider: "apple" as const, route: "direct" as const });
+		const input = (n: number) => ({ showKey: "item", episodeKey: "episode", data: Buffer.from(`audio-${n}`), fingerprint: Array.from({ length: 500 }, (_, i) => i + n * 1000), duration: 60, provider: "apple" as const, route: "direct" as const });
 		for (let i = 0; i < 5; i++) assert.equal(corpus.retain(input(i)).status, "retained");
 		assert.deepEqual(corpus.retain(input(5)), { status: "paused", reason: "episode_limit" });
 		const inventory = corpus.inventory("item", "episode");

@@ -14,7 +14,9 @@ export class Stable {
 	private cache = new Map<string, { until: number; user: User }>();
 	constructor(readonly base: string, private transport: Fetch = fetch) {
 		const url = new URL(base);
-		if (url.protocol !== 'https:' || url.username || url.password || url.pathname !== '/') throw new Error('invalid_stable_base');
+		// HTTP allowed only for verified stable service on private Docker network.
+		const internal = url.protocol === 'http:' && url.hostname === 'audiobookshelf' && (!url.port || url.port === '80');
+		if ((!internal && url.protocol !== 'https:') || url.username || url.password || url.pathname !== '/' || url.search || url.hash) throw new Error('invalid_stable_base');
 	}
 	async request(path: string, token: string): Promise<unknown> {
 		if (!/^\/api\/(me(?:\?|$|\/)|items\/|libraries(?:\/|\?|$)|playlists(?:\?|$)|users(?:\?|$))/.test(path) || path.includes('..')) throw new Error('stable_route_denied');

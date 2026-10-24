@@ -21,7 +21,7 @@ test("analysis adapter publishes only after authorized source and consent", asyn
 			},
 		};
 		const result: Result = { status: "no_difference", segments: [] };
-		assert.equal(await analyzeEpisode(client, async () => result, { serverId: "s", itemId: "i", episodeId: "e", fileId: "f" }, new AbortController().signal), result);
+		assert.equal(await analyzeEpisode(client, async () => result, { itemId: "i", episodeId: "e", fileId: "f" }, new AbortController().signal), result);
 		assert.equal(published, true);
 	} finally { await rm(dir, { recursive: true, force: true }); }
 });

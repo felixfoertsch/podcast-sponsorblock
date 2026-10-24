@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { request } from './analyzerTransport.js';
 import { createRecentFeedService, type FeedItem, type FeedSource } from './feeds.js';
 import { Stable } from './stable.js';
+import { normalizeEnclosureUrl } from './identity.js';
 import type { AuthEnv } from './app.js';
 const mediaSchema = z.object({ feedURL: z.string().nullable().optional(), episodes: z.array(z.object({ id: z.string(), title: z.string(), guid: z.string().nullable().optional(), enclosureURL: z.string().optional(), enclosure: z.object({ url: z.string().optional() }).passthrough().nullable().optional(), publishedAt: z.number().nullable().optional(), duration: z.number().optional() }).passthrough()).default([]), metadata: z.record(z.string(), z.unknown()).optional() }).passthrough();
 const record = z.record(z.string(), z.unknown());
@@ -17,7 +18,8 @@ export function createFeedRoutes(stable: Stable, feedTransport = { async fetch(u
 	const parsed: unknown = await parseStringPromise(xml, { explicitArray: true, strict: true });
 	const root = record.parse(parsed); const rss = record.parse(root.rss); const channel = record.parse((rss.channel as unknown[])[0]);
 	const rows = Array.isArray(channel.item) ? channel.item : [];
-	return { episodes: rows.map(row => {
+	const channelGuid = scalar(channel['podcast:guid'] ?? channel['{https://podcastindex.org/namespace/1.0}guid']) || null;
+	return { showGuid: channelGuid, episodes: rows.map(row => {
 		const ep = record.parse(row); const enc = Array.isArray(ep.enclosure) ? record.parse(ep.enclosure[0]) : {}; const attrs = enc.$ ? record.parse(enc.$) : {};
 		const date = Date.parse(scalar(ep.pubDate));
 		return { title: scalar(ep.title), guid: scalar(ep.guid) || null, enclosure: { url: scalar(attrs.url) }, publishedAt: Number.isFinite(date) ? date : null, durationSeconds: 0 };
@@ -53,14 +55,14 @@ export function createFeedRoutes(stable: Stable, feedTransport = { async fetch(u
 				const sources: FeedSource[] = [];
 				for (const row of response.results) {
 					if (row.mediaType && row.mediaType !== 'podcast') continue;
-					try { const item = await stable.item(row.id, token); const media = mediaSchema.parse(item.media); items.set(row.id, media); sources.push({ libraryItemId: row.id, podcastId: row.id, feedURL: feedUrl(media), podcast: media }); } catch { /* No access, no disclosure. */ }
+					try { const item = await stable.item(row.id, token); const media = mediaSchema.parse(item.media); items.set(row.id, media); sources.push({ libraryItemId: row.id, podcastId: row.id, feedURL: feedUrl(media), podcast: media, showGuid: null }); } catch { /* No access, no disclosure. */ }
 				}
 				return sources;
 			},
 			canAccessItem: (_token, id) => items.has(id),
 			getDownloadedEpisodes: async (_token, ids) => ids.flatMap(id => (items.get(id)?.episodes ?? []).map(ep => ({ ...ep, podcastId: id, libraryItemId: id, guid: ep.guid ?? null, enclosure: { url: ep.enclosure?.url ?? ep.enclosureURL ?? '' }, enclosureURL: ep.enclosure?.url ?? ep.enclosureURL ?? '', publishedAt: ep.publishedAt ?? null, duration: ep.duration ?? 0, downloaded: true, podcast: items.get(id) }) as FeedItem)),
 		}, AbortSignal.timeout(30000));
-		// Synthetic identities contain no signed enclosure URL in browser route IDs.
+		// Browser route IDs remain library-scoped; episode identity stays RSS-natural.
 		for (const ep of result.episodes) if (!ep.downloaded) ep.id = `feed:${ep.libraryItemId}:${createHash('sha256').update(String(ep.id)).digest('hex')}`;
 		return c.json(result);
 	});

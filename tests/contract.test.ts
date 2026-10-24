@@ -4,6 +4,7 @@ import { Stable } from '../src/stable.js';
 import { Store } from '../src/store.js';
 import { AnalysisCorpus } from '../src/corpus.js';
 import { createApp } from '../src/app.js';
+import { EpisodeResolver } from '../src/identity.js';
 import { createFeedRoutes } from '../src/feed-routes.js';
 import { analysisSchema, consentSchema, enqueueRequestSchema, enqueueSchema, jobStatusSchema, corpusSchema, summarySchema, recentFeedSchema } from '../contract/api.js';
 import fixtures from '../contract/fixtures.json';
@@ -16,7 +17,7 @@ test('contract fixtures parse as API schemas', () => {
 	assert.equal(summarySchema.parse(fixtures.summary).source, 'feed');
 	assert.equal(recentFeedSchema.parse(fixtures.recent).limit, 50);
 	assert.equal(corpusSchema.parse(fixtures.corpus).version, 2);
-	assert.equal(jobStatusSchema.parse(fixtures.status).jobs[0].kind, 'verify');
+	assert.equal(jobStatusSchema.parse(fixtures.status).jobs[0].analysisRuns, 0);
 });
 
 test('runtime route responses parse against contract schemas', async () => {
@@ -25,16 +26,18 @@ test('runtime route responses parse against contract schemas', async () => {
 	const stable = new Stable('https://stable.example', async (input) => {
 		const url = new URL(input.toString());
 		if (url.pathname === '/api/me') return Response.json(user);
-		if (url.pathname === '/api/items/item') return Response.json({ media: { episodes: [{ id: 'episode' }] } });
+		if (url.pathname === '/api/items/item') return Response.json({ media: { feedURL: 'https://feed.example/rss', episodes: [{ id: 'episode', guid: 'rss-guid', audioFile: { ino: 1, metadata: { size: 10, mtimeMs: 1 } } }] } });
 		if (url.pathname === '/api/libraries/lib') return Response.json({ id: 'lib' });
 		if (url.pathname === '/api/libraries/lib/items') return Response.json({ results: [] });
 		throw new Error(`unexpected stable route ${url.pathname}`);
 	});
 	const store = new Store(':memory:');
+	const resolver = new EpisodeResolver(async () => Buffer.from('<rss><channel><podcast:guid>show-guid</podcast:guid></channel></rss>'));
+	store.observeResolved('item', await resolver.resolve(await stable.item('item', access)));
 	store.setEnabled('item', true);
 	store.enqueue('item', 'episode');
 	const corpus = new AnalysisCorpus(':memory:');
-	const app = createApp(stable, store, corpus);
+	const app = createApp(stable, store, corpus, resolver);
 	const feed = createFeedRoutes(stable);
 	const headers = { Authorization: `Bearer ${access}`, 'Content-Type': 'application/json' };
 	try {

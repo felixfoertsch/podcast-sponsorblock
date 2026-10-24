@@ -14,37 +14,45 @@ import { transport } from './analyzerTransport.js';
 import { reconciler } from './scheduler.js';
 import { createFeedRoutes } from './feed-routes.js';
 import { createDebugRoutes } from './debug-server.js';
+import { EpisodeResolver } from './identity.js';
 
 async function main() {
 	await mkdir(env.PSB_DATA_DIR, { recursive: true, mode: 0o700 });
 	const stable = new Stable(env.PSB_STABLE_URL);
 	const credential = new Credential(env.PSB_STABLE_URL, env.PSB_STABLE_USERNAME, env.PSB_STABLE_PASSWORD);
-	const store = new Store(join(env.PSB_DATA_DIR, 'sidecar.sqlite'), { serverId: env.PSB_STABLE_URL, scheduler: reconciler(stable, credential) });
+	const resolver = new EpisodeResolver();
+	const store = new Store(join(env.PSB_DATA_DIR, 'sidecar.sqlite'), { scheduler: reconciler(stable, credential, resolver) });
 	const corpus = new AnalysisCorpus(join(env.PSB_DATA_DIR, 'sidecar.sqlite'));
-	const app = createApp(stable, store, corpus);
+	const app = createApp(stable, store, corpus, resolver);
 	app.route('/', createFeedRoutes(stable));
 	const debug = createDebugRoutes(stable, env.PSB_DATA_DIR);
 	app.route('/api/debug', debug);
 	void store.start(async (job, signal) => {
 		const bounded = AbortSignal.any([signal, AbortSignal.timeout(20 * 60 * 1000)]);
 		if (!store.enabled(job.itemId)) throw new Error('consent_required');
+		const item = await stable.item(job.itemId, await credential.get());
+		store.observeResolved(job.itemId, await resolver.resolve(item));
+		if (bounded.aborted || !store.enabled(job.itemId)) throw new Error('cancelled');
+		const cached = store.cachedHash(job.itemId, job.episodeId);
+		if (cached && store.content(cached)) return;
 		const source = await downloadSource(stable, credential, job.itemId, job.episodeId, bounded);
 		try {
-			if(job.kind==='verify') {
-				if(bounded.aborted||!store.enabled(job.itemId))throw new Error('cancelled');
-				const identity=fileIdentity(source.episode);
-				if(!identity)throw new Error('source_identity_unavailable');
-				if(identity&&(job.identity===null||identity===job.identity))store.verifySource(job.itemId,job.episodeId,source.sha256,identity);
-				else store.observeSources(job.itemId,source.item);
-				return;
-			}
+			const identity = fileIdentity(source.episode);
+			if (!identity) throw new Error('source_identity_unavailable');
+			store.cacheHash(job.itemId, job.episodeId, identity, source.sha256);
+			if (store.content(source.sha256)) return;
+			const resolved = store.resolution(job.itemId, job.episodeId);
+			if (!resolved) throw new Error('episode_resolution_required');
+			store.markAnalysis(job.id);
 			const metadata = parseAnalysisMetadata(source.item, source.episode);
-			const result = await analyzeCandidates({ sourcePath: source.path, duration: source.duration, itemId: job.itemId, episodeId: job.episodeId, corpus, ...metadata, episode: { ...metadata.episode, publishedAt: metadata.episode.pubDate }, transport, signal: bounded });
+			const result = await analyzeCandidates({ sourcePath: source.path, sourceSha256: source.sha256, duration: source.duration, itemId: resolved.showKey, episodeId: resolved.episodeKey, corpus, ...metadata, episode: { ...metadata.episode, publishedAt: metadata.episode.pubDate }, transport, signal: bounded });
 			if (bounded.aborted || !store.enabled(job.itemId)) throw new Error('cancelled');
-			// Re-download stable bytes before publication; metadata/ETag cannot prove timeline.
-			const current = await downloadSource(stable, credential, job.itemId, job.episodeId, bounded);
-			try { if (current.sha256 !== source.sha256) throw new Error('source_changed'); } finally { await current.cleanup(); }
-			store.setResult(job.itemId, job.episodeId, { status: result.status, sourceSha256: source.sha256, version: '1', segments: result.segments, adAnalysisEnabled: true, applicable: ['candidates', 'no_difference'].includes(result.status) }, fileIdentity(source.episode));
+			// Result describes downloaded bytes; only unchanged file identity may expose it locally.
+			const current = await stable.item(job.itemId, await credential.get());
+			store.observeResolved(job.itemId, await resolver.resolve(current));
+			if (store.resolution(job.itemId, job.episodeId)?.identity !== identity) throw new Error('source_changed');
+			if (bounded.aborted || !store.enabled(job.itemId)) throw new Error('cancelled');
+			store.setContent(source.sha256, { status: ['candidates', 'no_difference'].includes(result.status) ? result.status : `failed:${result.reason ?? result.status}`, segments: result.segments });
 		} finally { await source.cleanup(); }
 	});
 	if (env.PSB_SCHEDULER_ENABLED === '1') store.startScheduler();
