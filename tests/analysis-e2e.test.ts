@@ -11,6 +11,7 @@ import {downloadSource} from '../src/source.js';
 import {AnalysisCorpus} from '../src/corpus.js';
 import {analyzeCandidates} from '../src/analyzer.js';
 import {createApp} from '../src/app.js';
+import {EpisodeResolver} from '../src/identity.js';
 
 test('enqueue fetches authorized fixture, runs real detector, persists corpus and returns analysis',async t=>{
 	if(spawnSync('ffmpeg',['-version']).status!==0||spawnSync('fpcalc',['-version']).status!==0){t.skip('native ffmpeg/fpcalc not installed; check image supplies both');return;}
@@ -23,12 +24,13 @@ test('enqueue fetches authorized fixture, runs real detector, persists corpus an
 			const path=new URL(url.toString()).pathname;
 			if(path==='/login')return Response.json({user:{accessToken:'service'}});
 			if(path==='/api/me')return Response.json({id:'u',type:'admin',isActive:true,permissions:{}});
-			if(path==='/api/items/i')return Response.json({media:{metadata:{title:'Show'},episodes:[episode]}});
+			if(path==='/api/items/i')return Response.json({media:{feedURL:'https://feed.example/rss',metadata:{title:'Show'},episodes:[episode]}});
 			if(path==='/api/items/i/file/1'){sourceGets++;return new Response(bytes);}
 			throw Error('unexpected_route');
 		};
 		const stable=new Stable('https://stable.example',fetcher),credential=new Credential(stable.base,'u','p',fetcher),headers={Authorization:`Bearer x.${Buffer.from(JSON.stringify({type:'access'})).toString('base64url')}.x`,'Content-Type':'application/json'};
-		const app=createApp(stable,store,corpus);
+		const resolver=new EpisodeResolver(async()=>Buffer.from('<rss><channel><podcast:guid>show-guid</podcast:guid></channel></rss>'));
+		const app=createApp(stable,store,corpus,resolver);
 		assert.equal((await app.request('/api/podcasts/i/ad-analysis',{method:'POST',headers,body:'{"enabled":true}'})).status,200);
 		assert.equal((await app.request('/api/podcasts/i/episode/e/ad-analysis',{method:'POST',headers,body:'{}'})).status,202);
 		void store.start(async(job,signal)=>{
@@ -36,7 +38,8 @@ test('enqueue fetches authorized fixture, runs real detector, persists corpus an
 			try{
 				const result=await analyzeCandidates({sourcePath:source.path,duration:60,itemId:'i',episodeId:'e',episode,item:{title:'Show'},corpus,signal,transport:{candidates:async provider=>provider==='apple'?{results:[{feedUrl:'https://feed.example/rss',collectionName:'Show'}]}:[],fetchFeed:async()=>[episode],get:async url=>({data:bytes,url})}});
 				assert.equal(result.status,'no_difference',JSON.stringify(result));
-				store.setResult('i','e',{status:result.status,version:'1',sourceSha256:source.sha256,segments:result.segments,adAnalysisEnabled:true,applicable:true},fileIdentity(source.episode));
+				store.cacheHash('i','e',fileIdentity(source.episode)!,source.sha256);
+				store.setContent(source.sha256,{status:result.status,segments:result.segments});
 			}finally{await source.cleanup();}
 		});
 		const deadline=Date.now()+30000;
