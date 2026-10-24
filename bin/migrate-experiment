@@ -48,8 +48,10 @@ PY
 const fs=await import('node:fs'), path=await import('node:path'), Database=(await import('better-sqlite3')).default;
 const m=await import('./src/migration.ts'), root=process.env.MIGRATION_COPY, source=path.join(root,'config/absdatabase.sqlite');
 const old=new Database(source,{readonly:true,fileMustExist:true});
-const shows=old.prepare("SELECT p.id,p.feedURL,l.id AS libraryItemId,l.extraData FROM podcasts p JOIN libraryItems l ON l.mediaId=p.id AND l.mediaType='podcast'").all().map(r=>({id:r.id,libraryItemId:r.libraryItemId,feedUrl:r.feedURL,consent:Boolean(JSON.parse(r.extraData||'{}').adAnalysisEnabled)}));
-const episodes=old.prepare("SELECT e.id,e.podcastId AS showId,e.extraData,e.enclosureURL FROM podcastEpisodes e").all().map(r=>{let d={};try{d=JSON.parse(r.extraData||'{}')}catch{};return{id:r.id,showId:r.showId,guid:d.guid??null,enclosureUrl:r.enclosureURL??null,sourceSha256:d.adAnalysis?.sourceSha256??null,analysis:d.adAnalysis??null}});
+const safeRelativePath=value=>typeof value==='string'&&value.length>0&&!value.startsWith('/')&&!value.includes('\\\\')&&!value.split('/').some(part=>!part||part==='.'||part==='..');
+const safeSize=value=>Number.isSafeInteger(value)&&value>=0;
+const shows=old.prepare("SELECT p.id,p.feedURL,l.id AS libraryItemId,l.relPath,l.extraData FROM podcasts p JOIN libraryItems l ON l.mediaId=p.id AND l.mediaType='podcast'").all().map(r=>({id:r.id,libraryItemId:r.libraryItemId,feedUrl:r.feedURL,relPath:safeRelativePath(r.relPath)?r.relPath:null,consent:Boolean(JSON.parse(r.extraData||'{}').adAnalysisEnabled)}));
+const episodes=old.prepare("SELECT e.id,e.podcastId AS showId,e.extraData,e.enclosureURL,e.audioFile FROM podcastEpisodes e").all().map(r=>{let d={},audio={};try{d=JSON.parse(r.extraData||'{}')}catch{};try{audio=JSON.parse(r.audioFile||'{}').metadata||{}}catch{};return{id:r.id,showId:r.showId,guid:d.guid??null,enclosureUrl:r.enclosureURL??null,audioPath:safeRelativePath(audio.relPath)?audio.relPath:null,audioSize:safeSize(audio.size)?audio.size:null,sourceSha256:d.adAnalysis?.sourceSha256??null,analysis:d.adAnalysis??null}});
 const catalog=JSON.parse(fs.readFileSync(process.env.MIGRATION_CATALOG));
 const input={shows,episodes,corpusDir:path.join(root,'metadata/ad-analysis-corpus')};
 if(fs.existsSync(path.join(root,'config/debug-overlay.sqlite'))){const debug=new Database(path.join(root,'config/debug-overlay.sqlite'),{readonly:true});

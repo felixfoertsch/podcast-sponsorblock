@@ -9,11 +9,13 @@ const {parseEnv}=require('node:util');
 		if(!response.ok)throw Error('service_login_failed');token=(await response.json()).user.accessToken;
 	}
 	async function get(route){const response=await fetch(new URL(route,base),{headers:{Authorization:`Bearer ${token}`},redirect:'error',signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('catalog_request_failed');const text=await response.text();if(Buffer.byteLength(text)>16*1024*1024)throw Error('catalog_response_limit');return JSON.parse(text);}
+	const safeRelativePath=value=>typeof value==='string'&&value.length>0&&!value.startsWith('/')&&!value.includes('\\\\')&&!value.split('/').some(part=>!part||part==='.'||part==='..');
+	const safeSize=value=>Number.isSafeInteger(value)&&value>=0;
 	const shows=[],episodes=[],libraries=(await get('/api/libraries')).libraries;
 	for(const library of libraries){if(library.mediaType!=='podcast')continue;
 		for(let page=0;page<100;page++){
 			const result=await get(`/api/libraries/${encodeURIComponent(library.id)}/items?limit=100&page=${page}`);
-			for(const row of result.results){const item=await get(`/api/items/${encodeURIComponent(row.id)}?expanded=1`),media=item.media;shows.push({id:item.id,feedUrl:media.metadata?.feedUrl??media.feedURL??null});for(const ep of media.episodes??[])episodes.push({id:ep.id,showId:item.id,guid:ep.guid??null,enclosureUrl:ep.enclosure?.url??ep.enclosureURL??null});}
+			for(const row of result.results){const item=await get(`/api/items/${encodeURIComponent(row.id)}?expanded=1`),media=item.media;shows.push({id:item.id,feedUrl:media.metadata?.feedUrl??media.feedURL??null,relPath:safeRelativePath(item.relPath)?item.relPath:null});for(const ep of media.episodes??[]){const audio=ep.audioFile?.metadata??{};episodes.push({id:ep.id,showId:item.id,guid:ep.guid??null,enclosureUrl:ep.enclosure?.url??ep.enclosureURL??null,audioPath:safeRelativePath(audio.relPath)?audio.relPath:null,audioSize:safeSize(audio.size)?audio.size:null});}}
 			if((page+1)*100>=result.total)break;if(page===99)throw Error('catalog_pagination_limit');
 		}
 	}

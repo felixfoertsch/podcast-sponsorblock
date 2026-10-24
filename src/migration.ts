@@ -7,23 +7,34 @@ import { Store } from "./store.js";
 import { AnalysisCorpus } from "./corpus.js";
 import { type DebugImport } from "debug-overlay/server";
 
-export type CatalogShow = { id: string; feedUrl: string | null };
-export type CatalogEpisode = { id: string; showId: string; guid: string | null; enclosureUrl: string | null };
-export type Match = { oldShowId: string; stableShowId: string; oldEpisodeId: string; stableEpisodeId: string | null; reason: "guid" | "enclosure" | "unmatched" | "conflict" };
+export type CatalogShow = { id: string; feedUrl: string | null; relPath?: string | null };
+export type CatalogEpisode = { id: string; showId: string; guid: string | null; enclosureUrl: string | null; audioPath?: string | null; audioSize?: number | null };
+export type Match = { oldShowId: string; stableShowId: string; oldEpisodeId: string; stableEpisodeId: string | null; reason: "path-size" | "guid" | "enclosure" | "unmatched" | "conflict" };
 const sha = (bytes: Buffer) => createHash("sha256").update(bytes).digest("hex");
 const safeEqual = (a: string | null, b: string | null) => Boolean(a && b && a === b);
+const safeRelativePath = (value: unknown): value is string => typeof value === "string" && value.length > 0 && !value.startsWith("/") && !value.includes("\\") && !value.split("/").some(part => !part || part === "." || part === "..");
 const validId = (v:unknown):v is string => typeof v === "string" && /^[a-zA-Z0-9_-]{1,128}$/.test(v);
 const hex = (v: unknown): v is string => typeof v === "string" && /^[a-f0-9]{64}$/.test(v);
 
-export function matchCatalog(oldShows: Array<{id:string;feedUrl:string|null}>, oldEpisodes: Array<{id:string;showId:string;guid:string|null;enclosureUrl:string|null}>, stableShows: CatalogShow[], stableEpisodes: CatalogEpisode[]): Match[] {
+export function matchCatalog(oldShows: Array<{id:string;feedUrl:string|null;relPath?:string|null}>, oldEpisodes: Array<{id:string;showId:string;guid:string|null;enclosureUrl:string|null;audioPath?:string|null;audioSize?:number|null}>, stableShows: CatalogShow[], stableEpisodes: CatalogEpisode[]): Match[] {
  const byFeed = new Map<string, CatalogShow[]>();
  for (const show of stableShows) if (show.feedUrl) byFeed.set(show.feedUrl, [...(byFeed.get(show.feedUrl) ?? []), show]);
  const showMatches = new Map<string, CatalogShow>();
- for (const old of oldShows) { const hits = old.feedUrl ? byFeed.get(old.feedUrl) ?? [] : []; if (hits.length === 1 && oldShows.filter(s=>s.feedUrl===old.feedUrl).length===1) showMatches.set(old.id, hits[0]); }
+ for (const old of oldShows) {
+  const paths = safeRelativePath(old.relPath) ? stableShows.filter(s => s.relPath === old.relPath && safeRelativePath(s.relPath)) : [];
+  if (paths.length === 1) { showMatches.set(old.id, paths[0]); continue; }
+  if (paths.length > 1) continue;
+  const hits = old.feedUrl ? byFeed.get(old.feedUrl) ?? [] : [];
+  if (hits.length === 1 && oldShows.filter(s=>s.feedUrl===old.feedUrl).length===1) showMatches.set(old.id, hits[0]);
+ }
  return oldEpisodes.map(old => {
   const show = showMatches.get(old.showId);
   if (!show) return { oldShowId:old.showId,stableShowId:"",oldEpisodeId:old.id,stableEpisodeId:null,reason:"unmatched" };
-  const candidates=stableEpisodes.filter(ep=>ep.showId===show.id), guid=old.guid?candidates.filter(ep=>safeEqual(ep.guid,old.guid)):[], enclosure=old.enclosureUrl?candidates.filter(ep=>safeEqual(ep.enclosureUrl,old.enclosureUrl)):[];
+  const candidates=stableEpisodes.filter(ep=>ep.showId===show.id);
+  const path=safeRelativePath(old.audioPath)&&Number.isSafeInteger(old.audioSize)&&old.audioSize!>=0?candidates.filter(ep=>safeRelativePath(ep.audioPath)&&Number.isSafeInteger(ep.audioSize)&&ep.audioSize!>=0&&ep.audioPath===old.audioPath&&ep.audioSize===old.audioSize):[];
+  if(path.length>1) return {oldShowId:old.showId,stableShowId:show.id,oldEpisodeId:old.id,stableEpisodeId:null,reason:"conflict"};
+  if(path.length===1)return {oldShowId:old.showId,stableShowId:show.id,oldEpisodeId:old.id,stableEpisodeId:path[0].id,reason:"path-size"};
+  const guid=old.guid?candidates.filter(ep=>safeEqual(ep.guid,old.guid)):[], enclosure=old.enclosureUrl?candidates.filter(ep=>safeEqual(ep.enclosureUrl,old.enclosureUrl)):[];
   if(guid.length>1||enclosure.length>1||(guid.length&&enclosure.length&&guid[0].id!==enclosure[0].id)) return {oldShowId:old.showId,stableShowId:show.id,oldEpisodeId:old.id,stableEpisodeId:null,reason:"conflict"};
   const hit=guid[0]??enclosure[0]; return {oldShowId:old.showId,stableShowId:show.id,oldEpisodeId:old.id,stableEpisodeId:hit?.id??null,reason:hit?guid.length?"guid":"enclosure":"unmatched"};
  });
