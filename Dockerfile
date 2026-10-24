@@ -1,5 +1,5 @@
-FROM oven/bun:1.4.3 AS bun
-FROM node:24.21.0-alpine AS build
+FROM oven/bun:1.4.3-alpine AS bun
+FROM node:24.21.0-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS build
 WORKDIR /app
 COPY package.json bun.lock ./
 COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
@@ -8,12 +8,12 @@ COPY . .
 RUN bun run build && bun run test
 
 FROM build AS check
-RUN apk add --no-cache ffmpeg chromaprint && node scripts/native-smoke.cjs
+RUN apk add --no-cache ffmpeg=8.1.2-r0 chromaprint=1.6.0-r0 && node scripts/native-smoke.cjs
 
-FROM node:24.21.0-alpine AS runtime
+FROM node:24.21.0-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS runtime
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 PSB_DATA_DIR=/data
-RUN apk add --no-cache ffmpeg chromaprint \
+RUN apk add --no-cache ffmpeg=8.1.2-r0 chromaprint=1.6.0-r0 \
 	&& mkdir -p /data /tmp/psb \
 	&& chown -R node:node /data /tmp/psb
 COPY --from=build --chown=node:node /app/package.json /app/
