@@ -13,7 +13,6 @@ const episodeSchema = z.object({
 	title: z.string(),
 	guid: z.string().nullish(),
 	pubDate: z.string().nullish(),
-	enclosure: z.object({ url: z.string() }),
 });
 
 export function parseAnalysisMetadata(item: unknown, episode: unknown) {

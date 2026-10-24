@@ -10,6 +10,8 @@ import type { AnalysisCorpus } from "./corpus";
 import { normalize, matchesEpisode, PERIOD, DELAY } from "../vendor/daiAlignment.js";
 import { catalogEndpoint, catalogResults, type CatalogItem, type EpisodeLike } from "./analyzerTransport";
 
+type AnalysisEpisode = Pick<EpisodeLike, "guid" | "title" | "publishedAt">;
+
 const run = promisify(execFile);
 export const MAX_DURATION = 14_400;
 export const MAX_AUDIO_BYTES = 256 * 1024 * 1024;
@@ -72,7 +74,7 @@ export interface CandidateTransport {
 	candidates(provider: "apple" | "gpodder", item: CatalogItem, signal: AbortSignal): Promise<unknown>;
 }
 
-export async function analyzeCandidates(input: { sourcePath: string; duration: number; episodeId: string; itemId: string; episode: EpisodeLike; item: CatalogItem; transport: CandidateTransport; corpus: AnalysisCorpus; signal: AbortSignal; env?: NodeJS.ProcessEnv }): Promise<CandidateResult> {
+export async function analyzeCandidates(input: { sourcePath: string; duration: number; episodeId: string; itemId: string; episode: AnalysisEpisode; item: CatalogItem; transport: CandidateTransport; corpus: AnalysisCorpus; signal: AbortSignal; env?: NodeJS.ProcessEnv }): Promise<CandidateResult> {
 	const { sourcePath, duration, episode, item, transport, signal } = input;
 	const env = input.env || process.env;
 	const sourceStat = await stat(sourcePath);
