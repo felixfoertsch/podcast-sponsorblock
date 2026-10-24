@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Stable, HttpError, permitsAdminWrite, type User } from './stable.js';
 import type { Store } from './store.js';
 export type AuthEnv = { Variables: { token: string; user: User } };
-export function createApp(stable: Stable, store: Store, corpus?: { inventory(itemId: string, episodeId: string): unknown }) {
+export function createApp(stable: Stable, store: Store, corpus?: { inventory(itemId: string, episodeId: string): unknown }, verifySource?: (itemId: string, episodeId: string) => Promise<string>) {
 	const app = new Hono<AuthEnv>();
 	const writes = new Map<string, { start: number; count: number }>();
 	app.onError((error, c) => c.json({ error: error instanceof HttpError ? error.message : 'internal_error' }, error instanceof HttpError ? error.status as 401 : 500));
@@ -33,7 +33,19 @@ export function createApp(stable: Stable, store: Store, corpus?: { inventory(ite
 	});
 	app.get('/api/items/:itemId/analysis', async c => {
 		await stable.item(c.req.param('itemId'), c.get('token'));
-		return c.json({ episodes: store.analysis(c.req.param('itemId')) });
+		const itemId = c.req.param('itemId');
+		const episodes = store.analysis(itemId);
+		if (verifySource) {
+			for (const [episodeId, result] of Object.entries(episodes)) {
+				if (!result.adAnalysisEnabled || !result.sourceSha256) continue;
+				try {
+					const hash = await verifySource(itemId, episodeId);
+					store.verifySource(itemId, episodeId, hash);
+				} catch { store.invalidateSource(itemId, episodeId, 'unavailable'); }
+			}
+		}
+		const response = store.analysis(itemId);
+		return c.json({ episodes: response });
 	});
 	app.get('/api/items/:itemId/analysis/status', async c => {
 		await stable.item(c.req.param('itemId'), c.get('token'));

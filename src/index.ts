@@ -21,11 +21,14 @@ async function main() {
 	const credential = new Credential(env.PSB_STABLE_URL, env.PSB_STABLE_USERNAME, env.PSB_STABLE_PASSWORD);
 	const store = new Store(join(env.PSB_DATA_DIR, 'sidecar.sqlite'), { serverId: env.PSB_STABLE_URL, scheduler: reconciler(stable, credential) });
 	const corpus = new AnalysisCorpus(join(env.PSB_DATA_DIR, 'sidecar.sqlite'));
-	const app = createApp(stable, store, corpus);
+	const app = createApp(stable, store, corpus, async (itemId, episodeId) => {
+		const source = await downloadSource(stable, credential, itemId, episodeId, AbortSignal.timeout(120000));
+		try { return source.sha256; } finally { await source.cleanup(); }
+	});
 	app.route('/', createFeedRoutes(stable));
 	const debug = createDebugRoutes(stable, env.PSB_DATA_DIR);
 	app.route('/api/debug', debug);
-	await store.start(async (job, signal) => {
+	void store.start(async (job, signal) => {
 		const bounded = AbortSignal.any([signal, AbortSignal.timeout(20 * 60 * 1000)]);
 		if (!store.enabled(job.itemId)) throw new Error('consent_required');
 		const source = await downloadSource(stable, credential, job.itemId, job.episodeId, bounded);
@@ -42,6 +45,6 @@ async function main() {
 	});
 	if (env.PSB_SCHEDULER_ENABLED === '1') store.startScheduler();
 	const server = serve({ fetch: app.fetch, port: env.PORT });
-	for (const signal of ['SIGTERM', 'SIGINT'] as const) process.once(signal, () => { store.stop(); server.close(() => { debug.close(); corpus.close(); store.close(); process.exit(0); }); });
+	for (const signal of ['SIGTERM', 'SIGINT'] as const) process.once(signal, () => { store.stop(); server.close(() => { void store.close().then(() => { debug.close(); corpus.close(); process.exit(0); }); }); });
 }
 void main().catch(() => { console.error('startup_failed'); process.exitCode = 1; });

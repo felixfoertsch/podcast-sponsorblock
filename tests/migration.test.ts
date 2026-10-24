@@ -31,3 +31,16 @@ test("dry import stays idempotent and source results remain inapplicable", () =>
 	assert.equal(db.pragma("integrity_check")[0].integrity_check, "ok");
 	db.close();
 });
+
+test("apply bridges runtime, gates source hashes, rolls back debug collisions", async () => {
+	const {mkdtempSync,rmSync}=await import('node:fs');const {join}=await import('node:path');const {tmpdir}=await import('node:os');const {Store}=await import('../src/store');
+	const dir=mkdtempSync(join(tmpdir(),'psb-apply-')), path=join(dir,'runtime.sqlite'), db=openMigrationDatabase(path);
+	const input={shows:[{id:'old',feedUrl:'f',consent:true}],episodes:[{id:'e',showId:'old',guid:'g',enclosureUrl:'u',sourceSha256:'a'.repeat(64),analysis:{segments:[{start:1,end:2}]}}],debugImport:{notes:[{routePath:'/item/old',note:'mapped',waitingOn:'',updatedAt:''}],subItems:[],statuses:[]}};
+	const shows=[{id:'new',feedUrl:'f'}],episodes=[{id:'new-e',showId:'new',guid:'g',enclosureUrl:'u'}], options={apply:true,debugDbPath:join(dir,'debug.sqlite')};
+	try{
+		assert.equal(migrateCopy(input,shows,episodes,db,Buffer.from('one'),options).resultsImported,1);
+		assert.equal(migrateCopy(input,shows,episodes,db,Buffer.from('one'),options).repeated,true);
+		const store=new Store(path);assert.equal(store.analysis('new')['new-e'].applicable,false);store.verifySource('new','new-e','a'.repeat(64));assert.equal(store.analysis('new')['new-e'].applicable,true);store.verifySource('new','new-e','b'.repeat(64));assert.deepEqual(store.analysis('new')['new-e'].segments,[]);assert.equal(store.jobs('new')[0].status,'queued');await store.close();
+		assert.equal(db.pragma('integrity_check')[0].integrity_check,'ok');assert.equal(db.pragma('foreign_key_check').length,0);
+	}finally{db.close();rmSync(dir,{recursive:true,force:true});}
+});

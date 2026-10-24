@@ -14,6 +14,9 @@ export class Store {
 	private scheduler?: StoreOptions["scheduler"];
 	private intervalMs: number;
 	private scheduling = false;
+	private pump?: Promise<void>;
+	private schedulerRun?: Promise<void>;
+	private schedulerAbort?: AbortController;
 
 	constructor(path: string, options: StoreOptions = {}) {
 		this.db = new Database(path);
@@ -27,7 +30,8 @@ export class Store {
 			CREATE TABLE IF NOT EXISTS consent(server_id TEXT NOT NULL,item_id TEXT NOT NULL,enabled INTEGER NOT NULL CHECK(enabled IN (0,1)),PRIMARY KEY(server_id,item_id));
 			CREATE TABLE IF NOT EXISTS jobs(id INTEGER PRIMARY KEY,server_id TEXT NOT NULL,item_id TEXT NOT NULL,episode_id TEXT NOT NULL,status TEXT NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,error TEXT,created_at INTEGER NOT NULL,UNIQUE(server_id,item_id,episode_id));
 			CREATE INDEX IF NOT EXISTS jobs_status_created ON jobs(status,created_at);
-			CREATE TABLE IF NOT EXISTS results(server_id TEXT NOT NULL,item_id TEXT NOT NULL,episode_id TEXT NOT NULL,source_sha TEXT NOT NULL,version TEXT NOT NULL,segments TEXT NOT NULL,applicable INTEGER NOT NULL,status TEXT NOT NULL DEFAULT 'complete',PRIMARY KEY(server_id,item_id,episode_id));`);
+			CREATE TABLE IF NOT EXISTS results(server_id TEXT NOT NULL,item_id TEXT NOT NULL,episode_id TEXT NOT NULL,source_sha TEXT NOT NULL,version TEXT NOT NULL,segments TEXT NOT NULL,applicable INTEGER NOT NULL,status TEXT NOT NULL DEFAULT 'complete',PRIMARY KEY(server_id,item_id,episode_id));
+			CREATE TABLE IF NOT EXISTS scheduler_state(server_id TEXT NOT NULL,library_id TEXT NOT NULL,page INTEGER NOT NULL CHECK(page>=0),PRIMARY KEY(server_id,library_id));`);
 		const columns = this.db.pragma('table_info(results)') as Array<{ name: string }>;
 		if (!columns.some(column => column.name === 'status')) this.db.exec("ALTER TABLE results ADD COLUMN status TEXT NOT NULL DEFAULT 'complete'");
 		this.db.prepare("UPDATE jobs SET status='interrupted' WHERE server_id=? AND status='running'").run(this.serverId);
@@ -36,6 +40,13 @@ export class Store {
 
 	enabled(itemId: string): boolean {
 		return Boolean(this.db.prepare("SELECT enabled FROM consent WHERE server_id=? AND item_id=?").pluck().get(this.serverId, itemId));
+	}
+	schedulerPage(libraryId: string): number {
+		return (this.db.prepare("SELECT page FROM scheduler_state WHERE server_id=? AND library_id=?").pluck().get(this.serverId, libraryId) as number | undefined) ?? 0;
+	}
+	setSchedulerPage(libraryId: string, page: number): void {
+		if (!Number.isSafeInteger(page) || page < 0) throw new Error("invalid_scheduler_page");
+		this.db.prepare("INSERT INTO scheduler_state VALUES(?,?,?) ON CONFLICT(server_id,library_id) DO UPDATE SET page=excluded.page").run(this.serverId, libraryId, page);
 	}
 	setEnabled(itemId: string, enabled: boolean): void {
 		this.db.prepare("INSERT INTO consent VALUES(?,?,?) ON CONFLICT(server_id,item_id) DO UPDATE SET enabled=excluded.enabled").run(this.serverId, itemId, Number(enabled));
@@ -56,6 +67,22 @@ export class Store {
 		const result = existing ? { lastInsertRowid: BigInt(existing.id) } : this.db.prepare("INSERT INTO jobs(server_id,item_id,episode_id,status,created_at) VALUES(?,?,?,'queued',?)").run(this.serverId,itemId,episodeId,Date.now());
 		return this.db.prepare("SELECT id,item_id AS itemId,episode_id AS episodeId,status,attempts,error FROM jobs WHERE id=?").get(result.lastInsertRowid) as Job;
 	}
+	verifySource(itemId: string, episodeId: string, sourceSha256: string): void {
+		if (!/^[a-f0-9]{64}$/i.test(sourceSha256)) {
+			this.invalidateSource(itemId, episodeId, "");
+			return;
+		}
+		const result = this.db.prepare("SELECT source_sha,segments FROM results WHERE server_id=? AND item_id=? AND episode_id=?").get(this.serverId,itemId,episodeId) as {source_sha:string;segments:string} | undefined;
+		if (result && result.source_sha.toLowerCase() === sourceSha256.toLowerCase() && this.enabled(itemId)) {
+			const segments = JSON.parse(result.segments) as Segment[];
+			this.db.prepare("UPDATE results SET applicable=1,status=? WHERE server_id=? AND item_id=? AND episode_id=?").run(segments.length ? "candidates" : "no_difference",this.serverId,itemId,episodeId);
+			return;
+		}
+		this.invalidateSource(itemId, episodeId, sourceSha256.toLowerCase());
+		if (this.enabled(itemId)) {
+			try { this.enqueue(itemId, episodeId); } catch (error) { if (!(error instanceof Error) || error.message !== "queue_full") throw error; }
+		}
+	}
 	analysis(itemId: string): Record<string, EpisodeResult> {
 		const rows = this.db.prepare("SELECT episode_id,source_sha,version,segments,applicable,status FROM results WHERE server_id=? AND item_id=?").all(this.serverId, itemId) as Array<{episode_id:string;source_sha:string;version:string;segments:string;applicable:number;status:string}>;
 		return Object.fromEntries(rows.map(row => { const valid = Boolean(row.applicable) && this.enabled(itemId); const segments = JSON.parse(row.segments) as Segment[]; return [row.episode_id, { status: valid ? row.status : "stale", version: row.version, sourceSha256: row.source_sha, segments: valid ? segments : [], adAnalysisEnabled: this.enabled(itemId), applicable: valid }]; }));
@@ -72,11 +99,12 @@ export class Store {
 		this.db.prepare("INSERT INTO results(server_id,item_id,episode_id,source_sha,version,segments,applicable,status) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(server_id,item_id,episode_id) DO UPDATE SET source_sha=excluded.source_sha,version=excluded.version,segments=excluded.segments,applicable=excluded.applicable,status=excluded.status").run(this.serverId,itemId,episodeId,result.sourceSha256,result.version,JSON.stringify(result.segments),Number(result.applicable),result.status);
 	}
 	invalidateSource(itemId: string, episodeId: string, sourceSha: string): void {
-		this.db.prepare("UPDATE results SET applicable=0 WHERE server_id=? AND item_id=? AND episode_id=? AND source_sha<>?").run(this.serverId,itemId,episodeId,sourceSha);
+		this.db.prepare("UPDATE results SET applicable=0,status='stale' WHERE server_id=? AND item_id=? AND episode_id=? AND source_sha<>?").run(this.serverId,itemId,episodeId,sourceSha);
 		this.db.prepare("UPDATE jobs SET status='cancelled' WHERE server_id=? AND item_id=? AND episode_id=? AND status IN ('queued','running')").run(this.serverId,itemId,episodeId);
+		for (const [id, controller] of this.active) if (this.db.prepare("SELECT item_id FROM jobs WHERE id=? AND server_id=? AND episode_id=?").pluck().get(id,this.serverId,episodeId) === itemId) controller.abort();
 	}
 	async start(worker: (job: Job, signal: AbortSignal) => Promise<void>): Promise<void> {
-		if (this.worker) return;
+		if (this.worker) return this.pump;
 		const controller = new AbortController(); this.worker = controller;
 		const pump = async (): Promise<void> => {
 			while (!controller.signal.aborted) {
@@ -90,7 +118,8 @@ export class Store {
 				} else await new Promise(resolve => setTimeout(resolve, 100));
 			}
 		};
-		void pump();
+		this.pump = pump().finally(() => { this.pump = undefined; });
+		return this.pump;
 	}
 	startScheduler(): void {
 		if (!this.scheduler || this.timer) return;
@@ -98,10 +127,11 @@ export class Store {
 			if (this.scheduling) return;
 			this.scheduling = true;
 			const controller = this.worker ?? new AbortController();
-			void this.scheduler?.(this, controller.signal).catch(() => { console.error('scheduler_failed'); }).finally(() => { this.scheduling = false; });
+			this.schedulerAbort = controller;
+			this.schedulerRun = this.scheduler?.(this, controller.signal).catch(() => { console.error('scheduler_failed'); }).finally(() => { this.scheduling = false; this.schedulerRun = undefined; this.schedulerAbort = undefined; });
 		};
 		run(); this.timer = setInterval(run, this.intervalMs);
 	}
-	stop(): void { this.worker?.abort(); this.worker = undefined; if (this.timer) clearInterval(this.timer); this.timer = undefined; for (const controller of this.active.values()) controller.abort(); }
-	close(): void { this.stop(); this.db.close(); }
+	stop(): void { this.worker?.abort(); this.worker = undefined; this.schedulerAbort?.abort(); if (this.timer) clearInterval(this.timer); this.timer = undefined; for (const controller of this.active.values()) controller.abort(); }
+	async close(): Promise<void> { this.stop(); if (this.pump || this.schedulerRun) await Promise.all([this.pump, this.schedulerRun]); this.db.close(); }
 }

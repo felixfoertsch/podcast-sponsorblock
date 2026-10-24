@@ -10,7 +10,23 @@ Required secrets: `PSB_STABLE_USERNAME`, `PSB_STABLE_PASSWORD`. Stable base defa
 
 Browser sends bearer token; sidecar validates through stable `/api/me`. No browser tokens stored. Native playback/progress stays on stable. API contracts live in `contract/`; frontend proxy strips `/psb` before forwarding. Public sidecar hostname intended: `psb.foertsch.family`; repository does not configure routing.
 
-Container runs as non-root `node`. Mount writable `/data`, bounded `/tmp` tmpfs; use read-only rootfs, dropped capabilities, resource limits. Do not mount stable media/config/metadata or Docker socket. Build-only extraction: no cutover or running-container changes.
+Container runs as non-root `node`; listen on container port `3000` (override with `PORT`). Set `PSB_STABLE_USERNAME` and `PSB_STABLE_PASSWORD`; `PSB_STABLE_URL` defaults to `https://audiobookshelf.felixfoertsch.de`. `PSB_DATA_DIR` defaults to `/data`; mount persistent writable storage there for sidecar SQLite state. Mount bounded writable `/tmp` tmpfs (the image uses `/tmp/psb` for temporary work). Use read-only root filesystem, drop all capabilities, and set CPU/memory/PID limits. Health probe: `GET /healthz` on port `3000` returns `{"status":"ok"}`. Do not mount stable media/config/metadata or Docker socket.
+
+Import backups with `bin/migrate-experiment --input BACKUP-TAR --stable-catalog JSON --database SQLITE`; add `--apply` only after reviewing dry-run results, and use `--debug-database SQLITE` when importing debug data. Keep `PSB_DATA_DIR` pointed at persistent volume. Back up sidecar data before upgrade; SQLite store upgrades schema on startup. Build-only extraction: no cutover or running-container changes.
+
+## Deployment (private staging only)
+
+Persistent `/data` holds `sidecar.sqlite` (runtime results and corpus blobs) and package-owned debug SQLite. Provision directory writable by image user `node` (UID 1000). Secrets file must contain only `PSB_STABLE_USERNAME` and `PSB_STABLE_PASSWORD`, mode `0600`. No stable mounts, public routing, or cutover.
+
+```fish
+docker run --name podcast-sponsorblock --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 2g --cpus 2 --env-file /secure/psb.env -e PSB_SCHEDULER_ENABLED=0 -p 127.0.0.1:3000:3000 -v /srv/psb:/data --tmpfs /tmp:rw,nosuid,nodev,size=512m git.felixfoertsch.de/felixfoertsch/podcast-sponsorblock:main
+```
+
+Offline migration needs Node, installed project dependencies, and Python 3. Stop sidecar before apply; back up both SQLite files. Default dry-run leaves destination untouched. Set `PSB_STABLE_URL` identically for migration and runtime (default stable URL above).
+
+```fish
+mise exec -- bin/migrate-experiment --input /backup/config-metadata.tar --stable-catalog /backup/catalog.json --database /srv/psb/sidecar.sqlite --debug-database /srv/psb/debug-overlay.sqlite --apply
+```
 
 ## Checks
 
