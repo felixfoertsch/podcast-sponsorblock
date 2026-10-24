@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { z } from 'zod';
+import { parseAnalysisMetadata } from './analysisMetadata.js';
 import { env } from './env.js';
 import { Stable } from './stable.js';
 import { Credential } from './credential.js';
@@ -38,9 +38,8 @@ async function main() {
 				else store.observeSources(job.itemId,source.item);
 				return;
 			}
-			const item = z.object({ media: z.object({ metadata: z.object({ title: z.string(), author: z.string().optional(), itunesId: z.union([z.string(), z.number()]).optional() }) }) }).parse(source.item);
-			const ep = z.object({ title: z.string(), guid: z.string().optional(), pubDate: z.string().optional(), enclosure: z.object({ url: z.string() }) }).parse(source.episode);
-			const result = await analyzeCandidates({ sourcePath: source.path, duration: source.duration, itemId: job.itemId, episodeId: job.episodeId, corpus, item: { ...item.media.metadata, itunesId: item.media.metadata.itunesId?.toString() }, episode: { ...ep, publishedAt: ep.pubDate }, transport, signal: bounded });
+			const metadata = parseAnalysisMetadata(source.item, source.episode);
+			const result = await analyzeCandidates({ sourcePath: source.path, duration: source.duration, itemId: job.itemId, episodeId: job.episodeId, corpus, ...metadata, episode: { ...metadata.episode, publishedAt: metadata.episode.pubDate }, transport, signal: bounded });
 			if (bounded.aborted || !store.enabled(job.itemId)) throw new Error('cancelled');
 			// Re-download stable bytes before publication; metadata/ETag cannot prove timeline.
 			const current = await downloadSource(stable, credential, job.itemId, job.episodeId, bounded);
