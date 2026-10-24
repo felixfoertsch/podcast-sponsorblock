@@ -27,7 +27,7 @@ export function createDebugRoutes(stable: Stable, dataDir: string) {
 					if (page === 99) throw new Error('debug_discovery_limit');
 				}
 			}
-			const playlists = z.array(z.object({ id: z.string(), userId: z.string() })).parse(await stable.request('/api/playlists', token));
+			const { playlists } = z.object({ playlists: z.array(z.object({ id: z.string(), userId: z.string() })) }).parse(await stable.request('/api/playlists', token));
 			const user = await stable.validate(token);
 			for (const playlist of playlists) if (playlist.userId === user.id) paths.add(`/playlist/${encodeURIComponent(playlist.id)}`);
 			return [...paths].sort();
