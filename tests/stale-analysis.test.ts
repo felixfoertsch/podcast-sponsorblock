@@ -22,15 +22,3 @@ test('source verification never promotes inconclusive analysis to no_difference'
 		assert.equal(store.jobs('i')[0].status,'queued');
 	}finally{void store.close();}
 });
-test('analysis HTTP read verifies bytes before returning migrated segments',async()=>{
-	const {Stable}=await import('../src/stable.js');const {createApp}=await import('../src/app.js');
-	const store=new Store(':memory:');let hash='a'.repeat(64);
-	const stable=new Stable('https://stable.example',async url=>new URL(url.toString()).pathname==='/api/me'?Response.json({id:'u',type:'user',isActive:true,permissions:{}}):Response.json({media:{episodes:[{id:'e'}]}}));
-	try{
-		store.setEnabled('i',true);store.setResult('i','e',{status:'stale',version:'migration-v1',sourceSha256:hash,segments:[{start:1,end:2}],adAnalysisEnabled:true,applicable:false});
-		const app=createApp(stable,store,undefined,async()=>hash),headers={Authorization:'Bearer user'};
-		const first=await app.request('/api/items/i/analysis',{headers});assert.equal((await first.json()).episodes.e.applicable,true);
-		hash='b'.repeat(64);const changed=await app.request('/api/items/i/analysis',{headers});const result=(await changed.json()).episodes.e;
-		assert.equal(result.applicable,false);assert.deepEqual(result.segments,[]);assert.equal(store.jobs('i')[0].status,'queued');
-	}finally{await store.close();}
-});

@@ -16,7 +16,7 @@ test('contract fixtures parse as API schemas', () => {
 	assert.equal(summarySchema.parse(fixtures.summary).source, 'feed');
 	assert.equal(recentFeedSchema.parse(fixtures.recent).limit, 50);
 	assert.equal(corpusSchema.parse(fixtures.corpus).version, 2);
-	assert.deepEqual(jobStatusSchema.parse(fixtures.status).jobs, []);
+	assert.equal(jobStatusSchema.parse(fixtures.status).jobs[0].kind, 'verify');
 });
 
 test('runtime route responses parse against contract schemas', async () => {

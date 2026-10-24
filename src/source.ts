@@ -8,7 +8,7 @@ import { pipeline } from 'node:stream/promises';
 import { z } from 'zod';
 import { Stable, HttpError, type Fetch } from './stable.js';
 import { Credential } from './credential.js';
-export const episodeSourceSchema = z.object({ id: z.string(), duration: z.number().finite().min(50).lt(14400), audioFile: z.object({ ino: z.union([z.string(), z.number()]) }) }).passthrough();
+export const episodeSourceSchema = z.object({ id: z.string(), duration: z.number().finite().min(50).lt(14400), audioFile: z.object({ ino: z.union([z.string(), z.number()]) }).passthrough() }).passthrough();
 export async function downloadSource(stable: Stable, credential: Credential, itemId: string, episodeId: string, signal: AbortSignal, transport: Fetch = fetch) {
 	const token = await credential.get();
 	const item = await stable.item(itemId, token);

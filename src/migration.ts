@@ -88,7 +88,7 @@ export function migrateCopy(input:Input,stableShows:CatalogShow[],stableEpisodes
 				const segments:unknown=old.analysis?.segments;
 				let end=0;
 				const valid=Array.isArray(segments)&&segments.every(s=>{const ok=typeof s==='object'&&s!==null&&Number.isFinite(s.start)&&Number.isFinite(s.end)&&s.start>=end&&s.end>s.start&&s.end<=14400;end=s.end;return ok;});
-				if(options.apply&&match.stableEpisodeId&&hex(old.sourceSha256)&&valid&&['candidates','no_difference','complete'].includes(old.analysis?.status)){db.prepare("INSERT INTO results VALUES(?,?,?,?,?,?,0,'stale') ON CONFLICT(server_id,item_id,episode_id) DO NOTHING").run(serverId,match.stableShowId,match.stableEpisodeId,old.sourceSha256,'migration-v1',JSON.stringify(segments));resultsImported++;}
+				if(options.apply&&match.stableEpisodeId&&hex(old.sourceSha256)&&valid&&['candidates','no_difference','complete'].includes(old.analysis?.status)){db.prepare("INSERT INTO results(server_id,item_id,episode_id,source_sha,version,segments,applicable,status) VALUES(?,?,?,?,?,?,0,'stale') ON CONFLICT(server_id,item_id,episode_id) DO NOTHING").run(serverId,match.stableShowId,match.stableEpisodeId,old.sourceSha256,'migration-v1',JSON.stringify(segments));resultsImported++;}
 			}
 			for(const row of corpus){const m=row.manifest;db.prepare("INSERT INTO psb_migration_corpus_archive(legacy_id,manifest_json,fingerprint,frames) VALUES(?,?,?,?)").run(row.legacyId,JSON.stringify(m),row.fingerprint,row.frames);
 				const match=episodeMap.get(m.episodeId), oldShow=input.shows.find(s=>s.id===match?.oldShowId);

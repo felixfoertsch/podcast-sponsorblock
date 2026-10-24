@@ -39,4 +39,4 @@ Copied-backup apply against experiment catalog into fresh disposable SQLite file
 | Repeated receipt | false | true |
 | Integrity / foreign-key violations | ok / 0 | ok / 0 |
 
-Migration digest `5de72cd1f0e7a306e8f2708463dcd7237503dde1300b242a95654df6ea73b94c`; archive SHA-256 unchanged from above. Imported results start with `applicable=0`. `/analysis` fetches stable source bytes before activation; different hash invalidates segments and queues reanalysis. Incomplete/failed legacy analyses remain archived, never promoted to `no_difference`. No stable import, public routing, or cutover performed.
+Migration digest `5de72cd1f0e7a306e8f2708463dcd7237503dde1300b242a95654df6ea73b94c`; archive SHA-256 unchanged from above. Imported results start with `applicable=0`. `/analysis` only observes stable file identity from ACL item JSON; single worker verifies bytes before activation. Different hash invalidates segments and queues reanalysis with consent. Incomplete/failed legacy analyses remain archived, never promoted to `no_difference`. No stable import, public routing, or cutover performed.

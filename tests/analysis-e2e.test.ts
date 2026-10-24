@@ -4,7 +4,7 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {Store} from '../src/store.js';
+import {Store,fileIdentity} from '../src/store.js';
 import {Stable} from '../src/stable.js';
 import {Credential} from '../src/credential.js';
 import {downloadSource} from '../src/source.js';
@@ -18,7 +18,7 @@ test('enqueue fetches authorized fixture, runs real detector, persists corpus an
 	try{
 		execFileSync('ffmpeg',['-nostdin','-v','error','-f','lavfi','-i','sine=frequency=440:duration=60','-c:a','libmp3lame',audio]);
 		const bytes=readFileSync(audio);let sourceGets=0;
-		const episode={id:'e',title:'Episode',guid:'g',publishedAt:'2026-01-01',duration:60,audioFile:{ino:'1'},enclosure:{url:'https://audio.example/source.mp3'}};
+		const episode={id:'e',title:'Episode',guid:'g',publishedAt:'2026-01-01',duration:60,audioFile:{ino:'1',metadata:{size:bytes.length,mtimeMs:1}},enclosure:{url:'https://audio.example/source.mp3'}};
 		const fetcher:typeof fetch=async url=>{
 			const path=new URL(url.toString()).pathname;
 			if(path==='/login')return Response.json({user:{accessToken:'service'}});
@@ -36,7 +36,7 @@ test('enqueue fetches authorized fixture, runs real detector, persists corpus an
 			try{
 				const result=await analyzeCandidates({sourcePath:source.path,duration:60,itemId:'i',episodeId:'e',episode,item:{title:'Show'},corpus,signal,transport:{candidates:async provider=>provider==='apple'?{results:[{feedUrl:'https://feed.example/rss',collectionName:'Show'}]}:[],fetchFeed:async()=>[episode],get:async url=>({data:bytes,url})}});
 				assert.equal(result.status,'no_difference',JSON.stringify(result));
-				store.setResult('i','e',{status:result.status,version:'1',sourceSha256:source.sha256,segments:result.segments,adAnalysisEnabled:true,applicable:true});
+				store.setResult('i','e',{status:result.status,version:'1',sourceSha256:source.sha256,segments:result.segments,adAnalysisEnabled:true,applicable:true},fileIdentity(source.episode));
 			}finally{await source.cleanup();}
 		});
 		const deadline=Date.now()+30000;
