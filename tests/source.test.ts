@@ -1,0 +1,23 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { Stable } from '../src/stable.js';
+import { Credential } from '../src/credential.js';
+import { downloadSource } from '../src/source.js';
+test('source uses authorized file GET, never playback or progress writes', async () => {
+	const ledger: { path: string; method: string }[] = [];
+	const fixture = async (url: string | URL | Request, options?: RequestInit) => {
+		const path = new URL(typeof url === 'object' && 'url' in url ? url.url : url.toString()).pathname;
+		ledger.push({path, method: options?.method ?? 'GET'});
+		if (path === '/login') return Response.json({ user: { accessToken: 'service-token' } });
+		assert.equal(new Headers(options?.headers).get('Authorization'), 'Bearer service-token');
+		if (path === '/api/items/i') return Response.json({media:{episodes:[{id:'e',duration:60,audioFile:{ino:'file'}}]}});
+		if (path === '/api/items/i/file/file') return new Response('fixture-audio');
+		throw new Error('unexpected_route');
+	};
+	const stable = new Stable('https://stable.example', fixture);
+	const credential = new Credential(stable.base, 'service', 'password', fixture);
+	const source = await downloadSource(stable,credential,'i','e',new AbortController().signal,fixture);
+	try { assert.match(source.sha256,/^[0-9a-f]{64}$/); assert.equal(source.duration,60); }
+	finally { await source.cleanup(); }
+	assert.deepEqual(ledger,[{path:'/login',method:'POST'},{path:'/api/items/i',method:'GET'},{path:'/api/items/i/file/file',method:'GET'}]);
+});

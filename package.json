@@ -1,0 +1,34 @@
+{
+	"name": "podcast-sponsorblock",
+	"version": "2026.10.24",
+	"private": true,
+	"license": "GPL-3.0",
+	"type": "commonjs",
+	"scripts": {
+		"build": "tsc",
+		"check": "tsc --noEmit && bun run test",
+		"start": "node dist/src/index.js",
+		"test": "node --import tsx --test tests/*.test.ts && mocha tests/*.test.js"
+	},
+	"dependencies": {
+		"@hono/node-server": "^2.1.5",
+		"axios": "0.27.2",
+		"better-sqlite3": "^13.0.3",
+		"debug-overlay": "https://git.felixfoertsch.de/felixfoertsch/debug-overlay/releases/download/v2026.10.21.2/debug-overlay-2026.10.21.2.tgz",
+		"hono": "4.12.9",
+		"ipaddr.js": "1.9.1",
+		"ssrf-req-filter": "1.1.0",
+		"xml2js": "^0.6.2",
+		"zod": "^4.6.7"
+	},
+	"devDependencies": {
+		"@types/better-sqlite3": "^9.6.0",
+		"@types/node": "^26.6.5",
+		"@types/xml2js": "^0.4.14",
+		"chai": "4",
+		"mocha": "^12.0.3",
+		"sinon": "^22.1.0",
+		"tsx": "^4.23.15",
+		"typescript": "^7.0.2"
+	}
+}

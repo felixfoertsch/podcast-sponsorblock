@@ -1,0 +1,2426 @@
+{
+  "sourceRevision": "bcfd59cc49e8195b989d3ffda7c032f0fe34a5ea",
+  "discovery": "Static extraction of literal describe/context/it/specify/test names; source line is approximate; dynamic/generated names are not expanded.",
+  "source": {
+    "suiteFiles": 49,
+    "staticTestNames": 394
+  },
+  "newRepository": {
+    "runnableTests": 16,
+    "command": "node --import tsx --test tests/*.test.ts",
+    "note": "Measured passing node:test cases; Mocha-adapted JavaScript suites are not included in package test command."
+  },
+  "suites": [
+    {
+      "sourcePath": "test/server/Logger.test.js",
+      "caseCount": 16,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Logger > logging methods > should have a method for each log level defined in the static block",
+          "sourceLine": 39,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > should call console.trace for trace logging",
+          "sourceLine": 47,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > should call console.debug for debug logging",
+          "sourceLine": 58,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > should call console.info for info logging",
+          "sourceLine": 69,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > should call console.warn for warn logging",
+          "sourceLine": 80,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > should call console.error for error logging",
+          "sourceLine": 91,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > should call console.error for fatal logging",
+          "sourceLine": 102,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > should call console.log for note logging",
+          "sourceLine": 113,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > should log to console and file if level is high enough",
+          "sourceLine": 126,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > should not log if log level is too low",
+          "sourceLine": 148,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > should emit log to all connected sockets with appropriate log level",
+          "sourceLine": 162,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > should log fatal messages to console and file regardless of log level",
+          "sourceLine": 189,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > should log note messages to console and file regardless of log level",
+          "sourceLine": 213,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > should log util.inspect(arg) for non-string objects",
+          "sourceLine": 237,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > socket listeners > should add and remove socket listeners",
+          "sourceLine": 255,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Logger > logging methods > #log > socket listeners > setLogLevel > should change the log level and log the new level",
+          "sourceLine": 272,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/auth/OidcAuthStrategy.test.js",
+      "caseCount": 11,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > accepts a same-origin relative path when router base path is empty",
+          "sourceLine": 35,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > accepts a same-origin absolute https URL",
+          "sourceLine": 39,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > rejects protocol-relative URLs",
+          "sourceLine": 44,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > rejects backslash-prefixed URLs",
+          "sourceLine": 48,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > rejects absolute external URLs",
+          "sourceLine": 52,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > rejects encoded protocol-relative path segments",
+          "sourceLine": 56,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > rejects same-origin URLs outside router base path",
+          "sourceLine": 60,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > rejects empty and malformed callback URLs",
+          "sourceLine": 66,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > uses x-forwarded-proto when determining same-origin https URLs",
+          "sourceLine": 72,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > OidcAuthStrategy - openIdAuthSession > configures a 10 minute TTL with autopurge so abandoned mobile logins are cleaned up",
+          "sourceLine": 88,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "OidcAuthStrategy - isValidWebCallbackUrl > OidcAuthStrategy - openIdAuthSession > still supports the same set/has/get/delete usage as a plain Map",
+          "sourceLine": 93,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/auth/TokenManager.test.js",
+      "caseCount": 8,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "TokenManager > validateAccessToken > accepts access tokens",
+          "sourceLine": 31,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TokenManager > validateAccessToken > jwtAuthCheck > rejects refresh tokens for API auth",
+          "sourceLine": 42,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TokenManager > validateAccessToken > jwtAuthCheck > allows access tokens for active users",
+          "sourceLine": 52,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TokenManager > validateAccessToken > jwtAuthCheck > 30-day sliding sessions > keeps an idle session for 30 days, slides JWT, database and persistent cookie on refresh",
+          "sourceLine": 110,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TokenManager > validateAccessToken > jwtAuthCheck > 30-day sliding sessions > expires an idle session at 30 days",
+          "sourceLine": 135,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TokenManager > validateAccessToken > jwtAuthCheck > 30-day sliding sessions > returns the same rotated token for concurrent requests and grace-period retries",
+          "sourceLine": 142,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TokenManager > validateAccessToken > jwtAuthCheck > 30-day sliding sessions > invalidateJwtSessionsForUser > self password change: keeps current session, deletes others",
+          "sourceLine": 190,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TokenManager > validateAccessToken > jwtAuthCheck > 30-day sliding sessions > invalidateJwtSessionsForUser > admin password reset: deletes all target sessions",
+          "sourceLine": 214,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/controllers/LibraryController.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "LibraryController.downloadMultiple > returns 403 for bulk download of an explicit item",
+          "sourceLine": 136,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.downloadMultiple > returns 403 for bulk download of a tag-restricted item",
+          "sourceLine": 146,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.downloadMultiple > returns 403 when bulk download includes both allowed and forbidden items",
+          "sourceLine": 156,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.downloadMultiple > starts zip download for allowed items only",
+          "sourceLine": 166,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/controllers/LibraryItemController.test.js",
+      "caseCount": 8,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > should remove authors and series with no books on library item delete",
+          "sourceLine": 86,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > should remove authors and series with no books on library item batch delete",
+          "sourceLine": 121,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > should remove authors and series with no books on library item update media",
+          "sourceLine": 162,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > batch item access control > batchGet returns 403 for a library item the user cannot access",
+          "sourceLine": 246,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > batch item access control > batchGet returns items when the user can access them",
+          "sourceLine": 256,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > batch item access control > batchUpdate returns 403 for a library item the user cannot access",
+          "sourceLine": 269,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > batch item access control > batchUpdate returns 403 when the user lacks canUpdate",
+          "sourceLine": 279,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryItemController > checkRemoveAuthorsAndSeries > batch item access control > batchDelete returns 403 for a library item the user cannot access",
+          "sourceLine": 291,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/controllers/LibraryRecentEpisodes.test.js",
+      "caseCount": 8,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > merges feed entries, dedupes GUID then enclosure, sorts and paginates",
+          "sourceLine": 14,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > returns expanded downloaded row contract and scopes query by library item IDs",
+          "sourceLine": 39,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > does not alter legacy pagination without includeFeed",
+          "sourceLine": 57,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > rejects invalid includeFeed pagination and defaults valid missing values",
+          "sourceLine": 64,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > excludes inaccessible items and marks unavailable and capped feeds",
+          "sourceLine": 72,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > falls back to flagged downloaded rows when feed is unavailable",
+          "sourceLine": 99,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > paginates all 262 feed episodes without silently capping each podcast",
+          "sourceLine": 110,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "LibraryController.getRecentEpisodes with includeFeed > applies real user library, explicit and tag access before reading feeds",
+          "sourceLine": 121,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/controllers/PodcastAdAnalysis.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Podcast ad analysis authorization > blocks inaccessible reads and writes before handlers",
+          "sourceLine": 10,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast ad analysis authorization > rejects nonadmin consent and arbitrary request fields",
+          "sourceLine": 20,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast ad analysis authorization > allows admin inventory with consent disabled, denies other users, never enqueues",
+          "sourceLine": 33,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast ad analysis authorization > requires consent, admin, known empty body; reads never enqueue",
+          "sourceLine": 48,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/controllers/PodcastEpisodeSummary.test.js",
+      "caseCount": 8,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Podcast episode summary > rejects summary access before exposing inaccessible podcast",
+          "sourceLine": 15,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode summary > counts feed episodes and uses matched downloaded user progress",
+          "sourceLine": 24,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode summary > expires feed cache and bounds retained feeds",
+          "sourceLine": 38,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode summary > shares an in-flight fetch even beyond the failure cache window",
+          "sourceLine": 55,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode summary > caches ${rejects ? 'rejected' : 'null'} failures for one minute",
+          "sourceLine": 69,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode summary > keeps cached feed shared but completion counts user-specific",
+          "sourceLine": 83,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode summary > does not fetch when podcast has no feed URL",
+          "sourceLine": 95,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode summary > falls back to downloaded episodes on feed failure",
+          "sourceLine": 103,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/controllers/UserController.test.js",
+      "caseCount": 1,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "UserController - delete > rejects deleting the root user by UUID",
+          "sourceLine": 16,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/debugHost.test.js",
+      "caseCount": 2,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "debug host > derives canonical routes from projected data, excluding missing entities and other users playlists",
+          "sourceLine": 20,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "debug host > requires fresh active admin/root state for every HTTP method, independent of supplied role",
+          "sourceLine": 73,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/debugJwt.test.js",
+      "caseCount": 1,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "debug native JWT boundary > checks JWT signature before fresh DB role for every method, including revocation behind cached identity",
+          "sourceLine": 17,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/debugOverlay.test.js",
+      "caseCount": 1,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "debug overlay adapter > persists notes across close/reopen and fails closed without affecting health",
+          "sourceLine": 11,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/debugShutdown.test.js",
+      "caseCount": 1,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "debug shutdown > waits for HTTP drain before closing debug SQLite",
+          "sourceLine": 9,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/finders/BookFinder.test.js",
+      "caseCount": 37,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > returns no candidates",
+          "sourceLine": 25,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > returns empty result",
+          "sourceLine": 251,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > returns non-empty result (no fuzzy searches)",
+          "sourceLine": 258,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > search('${searchTitle}', '${a}') returns non-empty result (with 1 fuzzy search)",
+          "sourceLine": 266,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > search('${searchTitle}', '${a}') returns non-empty result (with 2 fuzzy searches)",
+          "sourceLine": 272,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > search('${searchTitle}', '${a}') returns an empty result",
+          "sourceLine": 278,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > search('${searchTitle}', '${a}') returns an empty result (with no fuzzy searches)",
+          "sourceLine": 285,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search('${searchTitle}', '${a}') returns an empty result (1 fuzzy search)",
+          "sourceLine": 294,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search('${searchTitle}', '') returns a non-empty result (1 fuzzy search)",
+          "sourceLine": 304,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search('${searchTitle}', '') returns an empty result",
+          "sourceLine": 310,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search('${searchTitle}', '${u}') returns a non-empty result (1 fuzzy search)",
+          "sourceLine": 318,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search('${searchTitle}', '${u}') returns a non-empty result (no fuzzy search)",
+          "sourceLine": 324,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > returns results sorted by library item duration diff",
+          "sourceLine": 345,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > returns unsorted results if library item is null",
+          "sourceLine": 350,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > returns unsorted results if library item duration is undefined",
+          "sourceLine": 355,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > returns unsorted results if library item media is undefined",
+          "sourceLine": 360,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > should return a result last if it has no duration",
+          "sourceLine": 365,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should be 1.0 for perfect duration, title, and author match",
+          "sourceLine": 404,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score a large duration mismatch",
+          "sourceLine": 415,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score a medium duration mismatch",
+          "sourceLine": 426,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score a minor duration mismatch",
+          "sourceLine": 437,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score a tiny duration mismatch",
+          "sourceLine": 448,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should use default duration score if libraryItem duration is missing",
+          "sourceLine": 459,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should use default duration score if book duration is missing",
+          "sourceLine": 468,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score a partial title match",
+          "sourceLine": 477,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score a partial author match (comma-separated)",
+          "sourceLine": 490,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should give authorScore 0 if query has author but book does not",
+          "sourceLine": 505,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should give authorScore 1.0 if query has no author",
+          "sourceLine": 514,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > handles book author string that is only commas correctly (score 0)",
+          "sourceLine": 521,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should return 1.0 for ASIN results",
+          "sourceLine": 532,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should return 1.0 when author matches one of the book authors",
+          "sourceLine": 539,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should return 1.0 when author query and multiple book authors are the same",
+          "sourceLine": 546,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score against a book with a subtitle when the query has a subtitle",
+          "sourceLine": 553,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > should correctly score against a book with a subtitle when the query does not have a subtitle",
+          "sourceLine": 560,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > after fuzzy searches > should return 1.0 for a title candidate match",
+          "sourceLine": 568,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > after fuzzy searches > should return 1.0 for an author candidate match",
+          "sourceLine": 576,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TitleCandidates > cleanAuthor non-empty > no adds > single add > multiple adds > cleanAuthor empty > single add > AuthorCandidates > cleanAuthor is null > no adds > single add > multi add > cleanAuthor is a recognized author > no adds > single add > cleanAuthor is an unrecognized author > no adds > single add > cleanAuthor is unrecognized and dirty > no adds > single add > search > search title is empty > search title is a recognized title and search author is a recognized author > search title contains recognized title and search author is a recognized author > maxFuzzySearches = 0 > maxFuzzySearches = 1 > search title contains recognized title and search author is empty > search title contains recognized title and search author is an unrecognized author > search provider results have duration > matchConfidence score > for audible provider > after fuzzy searches > for non-audible provider (e.g., google) > should have not have matchConfidence",
+          "sourceLine": 588,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/frontendFixtures.test.js",
+      "caseCount": 1,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "frontend serializer fixture > matches real expanded models, playback session and emitted analysis payload",
+          "sourceLine": 15,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/managers/ApiCacheManager.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "ApiCacheManager > middleware > should send cached data if available",
+          "sourceLine": 22,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "ApiCacheManager > middleware > should cache and send response if data is not cached",
+          "sourceLine": 46,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "ApiCacheManager > middleware > should cache personalized response with 30 minutes TTL",
+          "sourceLine": 71,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "ApiCacheManager > middleware > clear on mediaProgress > should remove recent-episodes cache entries",
+          "sourceLine": 100,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/managers/BinaryManager.test.js",
+      "caseCount": 30,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "BinaryManager > init > should not install binaries if they are already found",
+          "sourceLine": 39,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > should install missing binaries",
+          "sourceLine": 51,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > exit if binaries are not found after installation",
+          "sourceLine": 70,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > should not exit if binaries are not found but not required",
+          "sourceLine": 89,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > should put found paths in the correct environment variables",
+          "sourceLine": 124,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > should add missing binaries to result",
+          "sourceLine": 137,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > should not install binaries if no binaries are passed",
+          "sourceLine": 170,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > should install binaries in main install path if has access",
+          "sourceLine": 179,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > should install binaries in alt install path if has no access to main",
+          "sourceLine": 192,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > should return the defaultPath if it exists and is a good binary",
+          "sourceLine": 237,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > should return the whichPath if it exists and is a good binary",
+          "sourceLine": 248,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > should return the mainInstallPath if it exists and is a good binary",
+          "sourceLine": 262,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > should return the altInstallPath if it exists and is a good binary",
+          "sourceLine": 278,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > should return null if no good binary is found",
+          "sourceLine": 296,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return false if binaryPath is falsy",
+          "sourceLine": 338,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return false if binaryPath does not exist",
+          "sourceLine": 348,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return false if failed to check version of binary",
+          "sourceLine": 359,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return false if version is not found",
+          "sourceLine": 372,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return false if version is found but does not match a good version",
+          "sourceLine": 386,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return true if version is found and matches a good version",
+          "sourceLine": 400,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should check library version file",
+          "sourceLine": 414,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return false if library version file does not exist",
+          "sourceLine": 430,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > should return false if library version does not match a valid version",
+          "sourceLine": 445,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > getFileName > should return the executable file name with .exe extension on Windows",
+          "sourceLine": 479,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > getFileName > should return the executable file name without extension on linux",
+          "sourceLine": 488,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > getFileName > should return the library file name with .dll extension on Windows",
+          "sourceLine": 497,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > getFileName > should return the library file name with .so extension on linux",
+          "sourceLine": 506,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > getFileName > should return the file name without extension for other types",
+          "sourceLine": 515,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > getFileName > download > should call downloadBinary with the correct parameters",
+          "sourceLine": 541,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "BinaryManager > init > findRequiredBinaries > install > Binary > find > isGood > getFileName > download > should write a version file for libraries",
+          "sourceLine": 550,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/managers/MigrationManager.test.js",
+      "caseCount": 28,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "MigrationManager > init > should initialize the MigrationManager",
+          "sourceLine": 56,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > should throw error if serverVersion is not provided",
+          "sourceLine": 77,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > should run up migrations successfully",
+          "sourceLine": 89,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > should run down migrations successfully",
+          "sourceLine": 113,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > should log that migrations will be skipped if database is new",
+          "sourceLine": 137,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > should log that no migrations are needed if serverVersion equals databaseVersion",
+          "sourceLine": 152,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > should handle migration failure and restore the original database",
+          "sourceLine": 167,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > should fetch versions from the migrationsMeta table",
+          "sourceLine": 196,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > should create the migrationsMeta table if it does not exist and fetch versions from it",
+          "sourceLine": 213,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > should create the migrationsMeta with databaseVersion=serverVersion if database is new",
+          "sourceLine": 232,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > should re-create the migrationsMeta table if it existed and database is new (Database force=true)",
+          "sourceLine": 251,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > should throw an error if the database query fails",
+          "sourceLine": 268,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > should update the maxVersion in the database",
+          "sourceLine": 287,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > should return null if tag is not provided",
+          "sourceLine": 308,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > should return null if tag does not match the version format",
+          "sourceLine": 319,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > should extract the version from the tag",
+          "sourceLine": 331,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > should copy migrations to the config directory",
+          "sourceLine": 345,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > should throw an error if copying the migrations fails",
+          "sourceLine": 366,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return migrations to run when direction is \"up\"",
+          "sourceLine": 395,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return migrations to run when direction is \"down\"",
+          "sourceLine": 410,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return empty array when no migrations to run up",
+          "sourceLine": 425,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return empty array when no migrations to run down",
+          "sourceLine": 440,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return down migrations to run when direction is \"down\" and up migration was not executed",
+          "sourceLine": 455,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return empty array when direction is \"down\" and server version is higher than database version",
+          "sourceLine": 470,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return empty array when direction is \"up\" and server version is lower than database version",
+          "sourceLine": 485,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return up migrations to run when server version is between migrations",
+          "sourceLine": 500,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > should return down migrations to run when server version is between migrations",
+          "sourceLine": 515,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "MigrationManager > init > runMigrations > fetchVersionsFromDatabase > updateMaxVersion > extractVersionFromTag > copyMigrationsToConfigDir > findMigrationsToRun > initUmzug > should initialize the umzug instance with migrations in the proper order",
+          "sourceLine": 532,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v0.0.1-migration_example.test.js",
+      "caseCount": 2,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "migration_example > up > should create example_table",
+          "sourceLine": 23,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration_example > up > down > should drop example_table",
+          "sourceLine": 41,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.15.0-series-column-unique.test.js",
+      "caseCount": 7,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "migration-v2.15.0-series-column-unique > up > upgrade with no duplicate series",
+          "sourceLine": 91,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration-v2.15.0-series-column-unique > up > upgrade with duplicate series and no sequence",
+          "sourceLine": 126,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration-v2.15.0-series-column-unique > up > upgrade with same series name in different libraries",
+          "sourceLine": 172,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration-v2.15.0-series-column-unique > up > upgrade with one book in two of the same series, both sequence are null",
+          "sourceLine": 203,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration-v2.15.0-series-column-unique > up > upgrade with one book in two of the same series, one sequence is null",
+          "sourceLine": 236,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration-v2.15.0-series-column-unique > up > upgrade with one book in two of the same series, both sequence are not null",
+          "sourceLine": 268,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration-v2.15.0-series-column-unique > up > down > should not have unique constraint on series name and libraryId",
+          "sourceLine": 323,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.17.3-fk-constraints.test.js",
+      "caseCount": 2,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "migration-v2.17.3-fk-constraints > up > should fix table foreign key constraints",
+          "sourceLine": 37,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "migration-v2.17.3-fk-constraints > up > should keep correct table foreign key constraints",
+          "sourceLine": 155,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.17.4-use-subfolder-for-oidc-redirect-uris.test.js",
+      "caseCount": 6,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > should add authOpenIDSubfolderForRedirectURLs if OIDC is enabled",
+          "sourceLine": 24,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > should not add authOpenIDSubfolderForRedirectURLs if OIDC is not enabled",
+          "sourceLine": 44,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > should throw an error if server settings cannot be parsed",
+          "sourceLine": 56,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > should throw an error if server settings are not found",
+          "sourceLine": 69,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > down > should remove authOpenIDSubfolderForRedirectURLs if it exists",
+          "sourceLine": 84,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > down > should not remove authOpenIDSubfolderForRedirectURLs if it does not exist",
+          "sourceLine": 104,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.17.5-remove-host-from-feed-urls.test.js",
+      "caseCount": 6,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > should remove serverAddress from URLs in Feeds and FeedEpisodes tables",
+          "sourceLine": 60,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > should handle null URLs in Feeds and FeedEpisodes tables",
+          "sourceLine": 100,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > should handle null serverAddress in Feeds table",
+          "sourceLine": 116,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > down > should add serverAddress back to URLs in Feeds and FeedEpisodes tables",
+          "sourceLine": 133,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > down > should handle null URLs in Feeds and FeedEpisodes tables",
+          "sourceLine": 172,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.4-use-subfolder-for-oidc-redirect-uris > up > down > should handle null serverAddress in Feeds table",
+          "sourceLine": 187,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.17.6-share-add-isdownloadable.test.js",
+      "caseCount": 2,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Migration v2.17.6-share-add-isDownloadable > up > should add the isDownloadable column to mediaItemShares table",
+          "sourceLine": 34,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.17.6-share-add-isDownloadable > up > down > should remove the isDownloadable column from mediaItemShares table",
+          "sourceLine": 54,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.19.1-copy-title-to-library-items.test.js",
+      "caseCount": 12,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > should copy title and titleIgnorePrefix to libraryItems",
+          "sourceLine": 50,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > should add index on title to libraryItems",
+          "sourceLine": 60,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > should add trigger to books.title to update libraryItems.title",
+          "sourceLine": 67,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > should add index on titleIgnorePrefix to libraryItems",
+          "sourceLine": 74,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > should add trigger to books.titleIgnorePrefix to update libraryItems.titleIgnorePrefix",
+          "sourceLine": 81,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > should add index on createdAt to libraryItems",
+          "sourceLine": 88,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > down > should remove title and titleIgnorePrefix from libraryItems",
+          "sourceLine": 97,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > down > should remove title trigger from books",
+          "sourceLine": 108,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > down > should remove titleIgnorePrefix trigger from books",
+          "sourceLine": 116,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > down > should remove index on titleIgnorePrefix from libraryItems",
+          "sourceLine": 124,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > down > should remove index on title from libraryItems",
+          "sourceLine": 132,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.1-copy-title-to-library-items > up > down > should remove index on createdAt from libraryItems",
+          "sourceLine": 140,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.19.4-improve-podcast-queries.test.js",
+      "caseCount": 11,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > should add numEpisodes column to podcasts",
+          "sourceLine": 78,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > should add podcastId column to mediaProgresses",
+          "sourceLine": 96,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > should copy title and titleIgnorePrefix from podcasts to libraryItems",
+          "sourceLine": 112,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > should add trigger to update title in libraryItems",
+          "sourceLine": 122,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > should add trigger to update titleIgnorePrefix in libraryItems",
+          "sourceLine": 129,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > should be idempotent",
+          "sourceLine": 136,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > down > should remove numEpisodes column from podcasts",
+          "sourceLine": 173,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > down > should remove podcastId column from mediaProgresses",
+          "sourceLine": 196,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > down > should remove trigger to update title in libraryItems",
+          "sourceLine": 213,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > down > should remove trigger to update titleIgnorePrefix in libraryItems",
+          "sourceLine": 221,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.19.4-improve-podcast-queries > up > down > should be idempotent",
+          "sourceLine": 229,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/migrations/v2.20.0-improve-author-sort-queries.test.js",
+      "caseCount": 14,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should add the authorNamesFirstLast and authorNamesLastFirst columns to the libraryItems table",
+          "sourceLine": 76,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should populate the authorNamesFirstLast and authorNamesLastFirst columns with the author names for each libraryItem",
+          "sourceLine": 84,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should create triggers to update the authorNamesFirstLast and authorNamesLastFirst columns when the corresponding bookAuthors and authors records are updated",
+          "sourceLine": 94,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should create indexes on the authorNamesFirstLast and authorNamesLastFirst columns",
+          "sourceLine": 161,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should trigger after update on authors",
+          "sourceLine": 185,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should trigger after insert on bookAuthors",
+          "sourceLine": 199,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should trigger after delete on bookAuthors",
+          "sourceLine": 216,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should add an index on publishedAt to the podcastEpisodes table",
+          "sourceLine": 230,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > should be idempotent",
+          "sourceLine": 244,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > down > should remove the authorNamesFirstLast and authorNamesLastFirst columns from the libraryItems table",
+          "sourceLine": 279,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > down > should remove the triggers from the libraryItems table",
+          "sourceLine": 294,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > down > should remove the indexes from the libraryItems table",
+          "sourceLine": 308,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > down > should remove the index on publishedAt from the podcastEpisodes table",
+          "sourceLine": 319,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Migration v2.20.0-improve-author-sort-queries > up > down > should be idempotent",
+          "sourceLine": 327,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/models/oldJsonSerialization.test.js",
+      "caseCount": 7,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "old JSON serialization > Book > toOldJSONExpanded is a strict superset of toOldJSONMinified",
+          "sourceLine": 102,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "old JSON serialization > Book > Podcast > uses stored episode count when episodes are unloaded",
+          "sourceLine": 121,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "old JSON serialization > Book > Podcast > uses stored episode count when episodes are loaded",
+          "sourceLine": 128,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "old JSON serialization > Book > Podcast > toOldJSONExpanded is a strict superset of toOldJSONMinified",
+          "sourceLine": 136,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "old JSON serialization > Book > Podcast > LibraryItem > projects owning podcast consent without reverse associations or private extraData",
+          "sourceLine": 150,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "old JSON serialization > Book > Podcast > LibraryItem > book library item expanded is a strict superset of minified",
+          "sourceLine": 170,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "old JSON serialization > Book > Podcast > LibraryItem > podcast library item expanded is a strict superset of minified",
+          "sourceLine": 183,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/modernWeb.test.js",
+      "caseCount": 8,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "modern web preview > serves deep links with actual runtime prefix ${prefix || '(root)'}",
+          "sourceLine": 45,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "modern web preview > serves uncached native manifest and icons scoped by relative URLs ${prefix || '(root)'}",
+          "sourceLine": 53,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "modern web preview > serves dotted canonical share slugs ${prefix || '(root)'}",
+          "sourceLine": 66,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "modern web preview > keeps classic and backend routes unchanged ${prefix || '(root)'}",
+          "sourceLine": 78,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "modern web preview > serves hashed assets with immutable caching, but never SPA HTML for missing files",
+          "sourceLine": 86,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "modern web preview > selects alpha landing only when enabled (${enabled}), preserves Classic and transports",
+          "sourceLine": 97,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "modern web preview > falls back to Classic landing when alpha build is absent",
+          "sourceLine": 131,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "modern web preview > rejects untrusted script-bearing prefix instead of reflecting it",
+          "sourceLine": 143,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/objects/TrackProgressMonitor.test.js",
+      "caseCount": 5,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "TrackProgressMonitor > should initialize correctly",
+          "sourceLine": 21,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TrackProgressMonitor > should update the progress",
+          "sourceLine": 36,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TrackProgressMonitor > should update the progress multiple times on the same track",
+          "sourceLine": 48,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TrackProgressMonitor > should update the progress multiple times on different tracks",
+          "sourceLine": 63,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "TrackProgressMonitor > should finish all tracks",
+          "sourceLine": 80,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/providers/Audible.test.js",
+      "caseCount": 10,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Audible > cleanSeriesSequence > should return an empty string if sequence is falsy",
+          "sourceLine": 13,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > should return the sequence as is if it does not contain a number",
+          "sourceLine": 18,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > should return the sequence as is if contains just a number",
+          "sourceLine": 23,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > should return the sequence as is if contains just a number with decimals",
+          "sourceLine": 28,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > should extract and return the first number from the sequence",
+          "sourceLine": 33,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > should extract and return the number with decimals from the sequence",
+          "sourceLine": 38,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > should extract and return the number even if it has no leading zero",
+          "sourceLine": 43,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > cleanResult > should set explicit to true when isAdult is true",
+          "sourceLine": 55,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > cleanResult > should set explicit to false when isAdult is false",
+          "sourceLine": 60,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Audible > cleanSeriesSequence > cleanResult > should set explicit to false when isAdult is not present",
+          "sourceLine": 65,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/PodcastRecency.test.js",
+      "caseCount": 3,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Podcast episode recency ordering > orders newest episode shelf by publication time",
+          "sourceLine": 10,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode recency ordering > bounds newest shelf by publication date rather than download date",
+          "sourceLine": 16,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Podcast episode recency ordering > keeps addedAt item sorting tied to library-item creation time",
+          "sourceLine": 26,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/adAnalysisDiagnostics.test.js",
+      "caseCount": 3,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "sanitized ad-analysis diagnostics > records actual native failure stage without exception payload",
+          "sourceLine": 12,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "sanitized ad-analysis diagnostics > persists timestamps and safe native/catalog stages, preserves guard and old-result overlay",
+          "sourceLine": 23,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "sanitized ad-analysis diagnostics > continues draining after unexpected rejection, does not warn for cancellation",
+          "sourceLine": 156,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/adAnalysisProxy.test.js",
+      "caseCount": 11,
+      "disposition": "copied-adapted",
+      "destination": "tests/adAnalysisProxy.test.js",
+      "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager",
+      "tests": [
+        {
+          "name": "Ad analysis proxy > rejects malformed or credential-bearing configuration without direct fallback",
+          "sourceLine": 80,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > pins CONNECT to public literal, preserves HTTP Host, never resolves destination twice",
+          "sourceLine": 88,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > pins public IPv6 literals with brackets and retains original authority",
+          "sourceLine": 95,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > preserves original TLS SNI, certificate verification and HTTPS Host",
+          "sourceLine": 102,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > rejects untrusted TLS certificate rather than weakening verification",
+          "sourceLine": 114,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > blocks every forbidden answer, private literals, mapped IPv6 and redirects before CONNECT",
+          "sourceLine": 118,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > revalidates redirect DNS and consent checkpoint before next connection",
+          "sourceLine": 128,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > rejects rebinding on same-host redirect instead of second proxy-side resolution",
+          "sourceLine": 136,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > fails closed for refused, dead and lost proxy; never requests origin directly",
+          "sourceLine": 141,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > bounds response bytes and absolute deadline despite trickling traffic",
+          "sourceLine": 152,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        },
+        {
+          "name": "Ad analysis proxy > aborts stalled CONNECT and DNS without direct fallback",
+          "sourceLine": 159,
+          "disposition": "copied-adapted",
+          "destination": "tests/adAnalysisProxy.test.js",
+          "limitation": "standalone fail-closed config checks; upstream HTTP proxy integration depends on ABS manager"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/adAnalysisPublicResult.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "ad analysis event authorization > sends state only to users with current item access",
+          "sourceLine": 11,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "ad analysis event authorization > ad analysis public result > normalizes legacy no-insertion samples",
+          "sourceLine": 39,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "ad analysis event authorization > ad analysis public result > does not hide candidates or failures when another copy has no differences",
+          "sourceLine": 45,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "ad analysis event authorization > ad analysis public result > queued or running job overrides stored result, but source mismatch is stale",
+          "sourceLine": 52,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/adCatalogMatching.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "deterministic ad-analysis catalog identity > uses stored Apple ID, not storefront-dependent search, to discover feed",
+          "sourceLine": 7,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "deterministic ad-analysis catalog identity > keeps search fallback and never interpolates unvalidated IDs",
+          "sourceLine": 13,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "deterministic ad-analysis catalog identity > preserves unique exact-title/date matches for ${show.title}",
+          "sourceLine": 20,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "deterministic ad-analysis catalog identity > rejects different episodes with similar titles and stale publication dates",
+          "sourceLine": 30,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/adComparisonCorpus.test.js",
+      "caseCount": 11,
+      "disposition": "copied-adapted",
+      "destination": "tests/adComparisonCorpus.test.js",
+      "limitation": "vendor corpus/MPEG helpers",
+      "tests": [
+        {
+          "name": "Persistent comparison corpus > retains compact frames and raw fingerprints, preserves provenance and deduplicates",
+          "sourceLine": 14,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > migrates v1 after verifying provenance, and completes interruption states on explicit load",
+          "sourceLine": 27,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > preserves legacy audio on ${failure} failure, inventory never migrates",
+          "sourceLine": 55,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > preserves audio when existing interrupted legacy frames do not match source",
+          "sourceLine": 93,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > pauses at five, never evicts, and allows offline reads at capacity",
+          "sourceLine": 107,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > counts compact frames, fingerprint and manifest bytes and rejects excess without replacing evidence",
+          "sourceLine": 113,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > cleans staging after cancelled or failed publication, preserves old evidence",
+          "sourceLine": 121,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > syncs metadata parent before publication, retries failed parent sync, preserves post-rename evidence",
+          "sourceLine": 128,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > cleans staging on ENOSPC without touching published versions",
+          "sourceLine": 158,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > rejects traversal IDs and substituted root or version directories",
+          "sourceLine": 169,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        },
+        {
+          "name": "Persistent comparison corpus > fails closed on malformed manifests and symlinks without deleting evidence",
+          "sourceLine": 177,
+          "disposition": "copied-adapted",
+          "destination": "tests/adComparisonCorpus.test.js",
+          "limitation": "vendor corpus/MPEG helpers"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/adComparisonPublication.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "Manager comparison publication boundary > searches ordinary public metadata punctuation without query injection",
+          "sourceLine": 54,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Manager comparison publication boundary > reports oversized original as unsupported rather than an unexplained failure",
+          "sourceLine": 69,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Manager comparison publication boundary > ${action}: checks manager callback after real staging, preserves published evidence",
+          "sourceLine": 78,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "Manager comparison publication boundary > full capacity rerun compares all five saved versions without any network",
+          "sourceLine": 109,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/daiAnalysis.test.js",
+      "caseCount": 16,
+      "disposition": "copied-adapted",
+      "destination": "tests/daiAnalysis.test.js",
+      "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted",
+      "tests": [
+        {
+          "name": "DAI candidate analysis > requires episode title and date, not title alone",
+          "sourceLine": 12,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > never complements unmatched, identical, or truncated audio",
+          "sourceLine": 17,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > retains only safe interiors of anchored insertion gaps",
+          "sourceLine": 26,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > keeps internal insertions despite an unmatched prefix",
+          "sourceLine": 35,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > keeps unmatched tails untagged",
+          "sourceLine": 45,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > refuses replacement ambiguity only when ends are unanchored",
+          "sourceLine": 50,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > normalizes provider contracts without treating catalog URLs as audio diversity",
+          "sourceLine": 64,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > deduplicates and drains bounded queue, including worker failure",
+          "sourceLine": 71,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > blocks private network requests and unsafe schemes",
+          "sourceLine": 88,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > bounds redirects, bytes, timeouts and disables ambient proxies",
+          "sourceLine": 95,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > cancels a real continuously trickling body at absolute deadline",
+          "sourceLine": 121,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > keeps emitted multi-sample segments disjoint without chain-overlap bug",
+          "sourceLine": 140,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > handles maximum-duration alignment off main event loop",
+          "sourceLine": 144,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > roundtrips JSON through SQLite and episode API serialization",
+          "sourceLine": 166,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > invalidates replaced source and exposes no paths",
+          "sourceLine": 190,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        },
+        {
+          "name": "DAI candidate analysis > real native fingerprints cover >120 s and preserve exact playback bytes",
+          "sourceLine": 204,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiAnalysis.test.js",
+          "limitation": "vendor matching/alignment safety assertions; ABS manager integration omitted"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/daiNativeSafety.test.js",
+      "caseCount": 1,
+      "disposition": "copied-adapted",
+      "destination": "tests/daiNativeSafety.test.js",
+      "limitation": "portable boundary + native version check",
+      "tests": [
+        {
+          "name": "Native unanchored span safety > keeps every emitted interior inside known changed audio across independent encodings",
+          "sourceLine": 11,
+          "disposition": "copied-adapted",
+          "destination": "tests/daiNativeSafety.test.js",
+          "limitation": "portable boundary + native version check"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/ffmpegHelpers.test.js",
+      "caseCount": 8,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "generateFFMetadata > should generate ffmetadata content with chapters",
+          "sourceLine": 35,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "generateFFMetadata > should generate ffmetadata content without chapters",
+          "sourceLine": 41,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "generateFFMetadata > should handle chapters with no title",
+          "sourceLine": 49,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "generateFFMetadata > should handle metadata escaping special characters (=, ;, #,  and a newline)",
+          "sourceLine": 60,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "generateFFMetadata > addCoverAndMetadataToFile > should add cover image and metadata to audio file",
+          "sourceLine": 112,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "generateFFMetadata > addCoverAndMetadataToFile > should handle missing cover image",
+          "sourceLine": 143,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "generateFFMetadata > addCoverAndMetadataToFile > should handle error during ffmpeg execution",
+          "sourceLine": 176,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "generateFFMetadata > addCoverAndMetadataToFile > should handle m4b embedding",
+          "sourceLine": 215,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/fileUtils.test.js",
+      "caseCount": 2,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "fileUtils > shouldIgnoreFile",
+          "sourceLine": 9,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "fileUtils > recurseFiles > should return filtered file list",
+          "sourceLine": 104,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/mpegFrameAlignment.test.js",
+      "caseCount": 5,
+      "disposition": "copied-adapted",
+      "destination": "tests/mpegFrameAlignment.test.js",
+      "limitation": "standalone vendor worker",
+      "tests": [
+        {
+          "name": "MPEG frame alignment > reproduces full-audio comparisons from compact evidence, including changed originals",
+          "sourceLine": 15,
+          "disposition": "copied-adapted",
+          "destination": "tests/mpegFrameAlignment.test.js",
+          "limitation": "standalone vendor worker"
+        },
+        {
+          "name": "MPEG frame alignment > passes compact typed arrays through the actual alignment worker",
+          "sourceLine": 26,
+          "disposition": "copied-adapted",
+          "destination": "tests/mpegFrameAlignment.test.js",
+          "limitation": "standalone vendor worker"
+        },
+        {
+          "name": "MPEG frame alignment > rejects malformed compact evidence",
+          "sourceLine": 39,
+          "disposition": "copied-adapted",
+          "destination": "tests/mpegFrameAlignment.test.js",
+          "limitation": "standalone vendor worker"
+        },
+        {
+          "name": "MPEG frame alignment > finds a stitched ad exact to one frame and nothing in the clean copy",
+          "sourceLine": 48,
+          "disposition": "copied-adapted",
+          "destination": "tests/mpegFrameAlignment.test.js",
+          "limitation": "standalone vendor worker"
+        },
+        {
+          "name": "MPEG frame alignment > skips ID3 tags and rejects copies without shared frames",
+          "sourceLine": 60,
+          "disposition": "copied-adapted",
+          "destination": "tests/mpegFrameAlignment.test.js",
+          "limitation": "standalone vendor worker"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/parsers/parseNameString.test.js",
+      "caseCount": 18,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "parseNameString > parse > returns null if nameString is empty",
+          "sourceLine": 7,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses single name in First Last format",
+          "sourceLine": 12,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses single name in Last, First format",
+          "sourceLine": 17,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses multiple names separated by &",
+          "sourceLine": 22,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses multiple names separated by \"and\"",
+          "sourceLine": 27,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses multiple names separated by comma and \"and\"",
+          "sourceLine": 32,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses multiple names separated by semicolon",
+          "sourceLine": 37,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses multiple names in Last, First format",
+          "sourceLine": 42,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses multiple names with single word name",
+          "sourceLine": 47,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > parses multiple names with single word name listed first (semicolon separator)",
+          "sourceLine": 52,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > handles names with suffixes",
+          "sourceLine": 57,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > handles compound last names",
+          "sourceLine": 62,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > handles Chinese/Japanese/Korean names",
+          "sourceLine": 67,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > removes duplicate names",
+          "sourceLine": 72,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > filters out empty names",
+          "sourceLine": 77,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > nameToLastFirst > converts First Last to Last, First format",
+          "sourceLine": 84,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > nameToLastFirst > returns last name only when no first name",
+          "sourceLine": 89,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNameString > parse > nameToLastFirst > handles names with middle names",
+          "sourceLine": 94,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/parsers/parseNfoMetadata.test.js",
+      "caseCount": 22,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "parseNfoMetadata > returns null if nfoText is empty",
+          "sourceLine": 6,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses title",
+          "sourceLine": 11,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses title with subtitle",
+          "sourceLine": 17,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > does not split title on bare colon without space",
+          "sourceLine": 24,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > does not split title on colon between words without space",
+          "sourceLine": 31,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses authors",
+          "sourceLine": 38,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses multiple authors",
+          "sourceLine": 44,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses narrators",
+          "sourceLine": 50,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses multiple narrators",
+          "sourceLine": 56,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses series name",
+          "sourceLine": 62,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses genre",
+          "sourceLine": 68,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses multiple genres",
+          "sourceLine": 74,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses tags",
+          "sourceLine": 80,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses year from various date fields",
+          "sourceLine": 86,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses position in series",
+          "sourceLine": 92,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses abridged flag",
+          "sourceLine": 98,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses publisher",
+          "sourceLine": 108,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses ASIN",
+          "sourceLine": 114,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses language",
+          "sourceLine": 120,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > parses description",
+          "sourceLine": 130,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > no value",
+          "sourceLine": 136,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseNfoMetadata > no year value",
+          "sourceLine": 142,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/parsers/parseOpfMetadata.test.js",
+      "caseCount": 8,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "parseOpfMetadata - test series > test one series",
+          "sourceLine": 6,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseOpfMetadata - test series > test more then 1 series - in correct order",
+          "sourceLine": 20,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseOpfMetadata - test series > test messed order of series content and index",
+          "sourceLine": 42,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseOpfMetadata - test series > test different values of series content and index",
+          "sourceLine": 62,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseOpfMetadata - test series > test empty series content",
+          "sourceLine": 84,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseOpfMetadata - test series > test series and index using an xml namespace",
+          "sourceLine": 98,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseOpfMetadata - test series > test series and series index not directly underneath",
+          "sourceLine": 112,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "parseOpfMetadata - test series > test author is parsed from refines meta",
+          "sourceLine": 127,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/requestUtils.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "requestUtils > isRequestSecure uses req.secure",
+          "sourceLine": 17,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "requestUtils > isRequestSecure uses x-forwarded-proto",
+          "sourceLine": 22,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "requestUtils > getRequestProtocol returns https or http",
+          "sourceLine": 28,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "requestUtils > getRequestOrigin builds origin from protocol and host",
+          "sourceLine": 33,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/scandir.test.js",
+      "caseCount": 1,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "scanUtils > should properly group files into potential book library items",
+          "sourceLine": 7,
+          "disposition": "upstream-owned"
+        }
+      ]
+    },
+    {
+      "sourcePath": "test/server/utils/stringifySequeslizeQuery.test.js",
+      "caseCount": 4,
+      "disposition": "upstream-owned",
+      "tests": [
+        {
+          "name": "stringifySequelizeQuery > should stringify a sequelize query containing an op",
+          "sourceLine": 8,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "stringifySequelizeQuery > should stringify a sequelize query containing a literal",
+          "sourceLine": 22,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "stringifySequelizeQuery > should stringify a sequelize query containing a class",
+          "sourceLine": 31,
+          "disposition": "upstream-owned"
+        },
+        {
+          "name": "stringifySequelizeQuery > should ignore non-class functions",
+          "sourceLine": 44,
+          "disposition": "upstream-owned"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() { printf 'Usage: %s --input BACKUP-TAR --stable-catalog JSON --database SQLITE [--dry-run]\n' "$0" >&2; exit 2; }
+main() {
+	local input= catalog= database= dry=0 tmp
+	while (($#)); do
+		case "$1" in
+			--input) input=${2:?}; shift 2;;
+			--stable-catalog) catalog=${2:?}; shift 2;;
+			--database) database=${2:?}; shift 2;;
+			--dry-run) dry=1; shift;;
+			*) usage;;
+		esac
+	done
+	[[ -f $input && -f $catalog && -n $database ]] || usage
+	tmp=$(mktemp -d)
+	trap 'rm -rf "$tmp"' EXIT
+	# Only extract approved backup members. Never open ComparisonCorpus.load source.
+	tar -xf "$input" -C "$tmp" config/absdatabase.sqlite config/debug-overlay.sqlite metadata/ad-analysis-corpus metadata/logs/daily metadata/logs/scans
+	MIGRATION_COPY="$tmp" MIGRATION_CATALOG="$catalog" MIGRATION_DB="$database" MIGRATION_DRY_RUN="$dry" node --import tsx -e 'import("./src/migration.ts").then(async ({openMigrationDatabase,sha256})=>{const fs=await import("node:fs");const path=await import("node:path");const root=process.env.MIGRATION_COPY;const src=path.join(root,"config/absdatabase.sqlite");const Database=(await import("better-sqlite3")).default;const old=new Database(src,{readonly:true,fileMustExist:true});const shows=old.prepare("SELECT p.id,p.feedURL,l.extraData FROM podcasts p JOIN libraryItems l ON l.mediaId=p.id AND l.mediaType=\"podcast\"").all().map(x=>({id:x.id,feedUrl:x.feedURL,consent:Boolean(JSON.parse(x.extraData||"{}").adAnalysisEnabled)}));const episodes=old.prepare("SELECT e.id,e.podcastId AS showId,e.extraData,e.enclosureURL FROM podcastEpisodes e").all().map(x=>{let data={};try{data=JSON.parse(x.extraData||"{}")}catch{};const a=data.adAnalysis??null;return{id:x.id,showId:x.showId,guid:data.guid??null,enclosureUrl:x.enclosureURL,sourceSha256:a?.sourceSha256??null,analysis:a}});const catalog=JSON.parse(fs.readFileSync(process.env.MIGRATION_CATALOG,"utf8"));const input={shows,episodes,corpusDir:path.join(root,"metadata/ad-analysis-corpus"),debugRecords:[]};const bytes=Buffer.from(JSON.stringify({source:sha256(fs.readFileSync(src)),shows,episodes}));if(process.env.MIGRATION_DRY_RUN==="1"){const db=openMigrationDatabase(":memory:");const result=await import("./src/migration.ts").then(m=>m.migrateCopy(input,catalog.shows,catalog.episodes,db,bytes));console.log(JSON.stringify({dryRun:true,digest:result.digest,shows:shows.length,episodes:episodes.length,matches:result.matches.filter(x=>x.stableEpisodeId).length,conflicts:result.matches.filter(x=>x.reason==="conflict").length,unmatched:result.matches.filter(x=>x.reason==="unmatched").length,corpus:fs.readdirSync(input.corpusDir).length,debugArchived:false}));return}console.error("Migration persistence requires importing debug and archived records from approved manifests; only dry-run currently supported.");process.exitCode=3})'
+}
+main "$@"

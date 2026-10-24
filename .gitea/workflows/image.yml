@@ -1,0 +1,61 @@
+name: Publish podcast-sponsorblock image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: podcast-sponsorblock-image-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  code: read
+  packages: write
+
+jobs:
+  publish:
+    if: github.repository == 'felixfoertsch/podcast-sponsorblock' && github.ref == 'refs/heads/main'
+    runs-on: linux-builder
+    container: gitea/runner-images@sha256:0e62e56b382ebf485bff1e51a05cbe27c708545a2e91425467fd31eb3e249521
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    env:
+      REGISTRY: git.felixfoertsch.de
+      IMAGE: git.felixfoertsch.de/felixfoertsch/podcast-sponsorblock
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Build and check image
+        run: |
+          set -euo pipefail
+          docker buildx create --name podcast-sponsorblock --driver remote docker-container://linux-builder-buildkit --use
+          docker buildx build --builder podcast-sponsorblock --platform linux/amd64 --target check .
+          docker buildx build --builder podcast-sponsorblock --platform linux/amd64 --load \
+            --label org.opencontainers.image.source=https://git.felixfoertsch.de/${{ github.repository }} \
+            --label org.opencontainers.image.revision=${{ github.sha }} \
+            -t podcast-sponsorblock:local .
+          docker run --rm --network none --entrypoint sh podcast-sponsorblock:local -ec '
+            test "$(id -u)" -ne 0
+            node --version
+            ffmpeg -version
+            fpcalc -version
+            node scripts/native-smoke.cjs
+            node scripts/image-smoke.cjs
+          '
+
+      - name: Publish image
+        if: github.ref == 'refs/heads/main'
+        env:
+          TOKEN: ${{ secrets.REGISTRY_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          echo "$TOKEN" | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
+          docker tag podcast-sponsorblock:local "$IMAGE:main"
+          docker tag podcast-sponsorblock:local "$IMAGE:sha-${{ github.sha }}"
+          docker push "$IMAGE:main"
+          docker push "$IMAGE:sha-${{ github.sha }}"

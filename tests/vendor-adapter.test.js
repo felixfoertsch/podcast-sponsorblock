@@ -1,0 +1,7 @@
+const assert = require('node:assert/strict')
+const mpeg = require('../vendor/mpegFrameAlignment')
+const corpus = require('../vendor/adComparisonCorpus')
+const proxy = require('../vendor/adAnalysisProxy')
+assert.equal(typeof mpeg.frames, 'function')
+assert.equal(typeof corpus.ComparisonCorpus, 'function')
+assert.equal(typeof proxy.configuration, 'function')
