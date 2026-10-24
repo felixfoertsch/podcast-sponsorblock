@@ -29,7 +29,8 @@ test('reconciliation persists pagination and admits every enabled show fairly',a
 		assert.equal(store.schedulerPage('p'),1); await store.close();
 		store = new Store(path); await reconcile(store,new AbortController().signal);
 		assert.equal(store.jobs('show-20').length,1); assert.equal(store.jobs('show-40').length,0);
-		assert.equal(store.schedulerPage('p'),1); await store.close();
+		assert.equal(store.schedulerPage('p'),1);
+		assert.equal(store.schedulerPage('p:offset'),12);
 		await store.close();
 	} finally {rmSync(dir,{recursive:true,force:true});}
 });
