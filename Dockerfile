@@ -8,12 +8,12 @@ COPY . .
 RUN bun run build && bun run test
 
 FROM build AS check
-RUN apk add --no-cache ffmpeg=8.1.2-r0 chromaprint=1.6.0-r0 && node scripts/native-smoke.cjs && node --import tsx --test tests/analysis-e2e.test.ts
+RUN apk add --no-cache ffmpeg=8.1.3-r0 chromaprint=1.6.0-r0 && node scripts/native-smoke.cjs && node --import tsx --test tests/analysis-e2e.test.ts
 
 FROM node:24.21.0-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS runtime
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000 PSB_DATA_DIR=/data
-RUN apk add --no-cache ffmpeg=8.1.2-r0 chromaprint=1.6.0-r0 \
+RUN apk add --no-cache ffmpeg=8.1.3-r0 chromaprint=1.6.0-r0 \
 	&& mkdir -p /data /tmp/psb \
 	&& chown -R node:node /data /tmp/psb
 COPY --from=build --chown=node:node /app/package.json /app/
