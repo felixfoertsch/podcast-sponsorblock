@@ -15,8 +15,8 @@ export function catalogEndpoint(provider: "apple" | "gpodder", media: CatalogIte
 
 export function catalogResults(provider: "apple" | "gpodder", payload: unknown): Candidate[] {
 	const rows: unknown = provider === "apple" ? (payload as { results?: unknown })?.results : payload;
-	if (!Array.isArray(rows) || rows.length > 5) throw new Error("malformed_catalog");
-	return rows.map((row: unknown) => {
+	if (!Array.isArray(rows) || rows.length > (provider === "gpodder" ? 20 : 5)) throw new Error("malformed_catalog");
+	return rows.slice(0, 5).map((row: unknown) => {
 		if (!row || typeof row !== "object" || Array.isArray(row)) throw new Error("malformed_catalog");
 		const r = row as Record<string, unknown>;
 		const url = provider === "apple" ? r.feedUrl : r.url;
