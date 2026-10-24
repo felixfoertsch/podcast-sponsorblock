@@ -27,9 +27,11 @@ export class Store {
 			CREATE TABLE IF NOT EXISTS consent(server_id TEXT NOT NULL,item_id TEXT NOT NULL,enabled INTEGER NOT NULL CHECK(enabled IN (0,1)),PRIMARY KEY(server_id,item_id));
 			CREATE TABLE IF NOT EXISTS jobs(id INTEGER PRIMARY KEY,server_id TEXT NOT NULL,item_id TEXT NOT NULL,episode_id TEXT NOT NULL,status TEXT NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,error TEXT,created_at INTEGER NOT NULL,UNIQUE(server_id,item_id,episode_id));
 			CREATE INDEX IF NOT EXISTS jobs_status_created ON jobs(status,created_at);
-			CREATE TABLE IF NOT EXISTS results(server_id TEXT NOT NULL,item_id TEXT NOT NULL,episode_id TEXT NOT NULL,source_sha TEXT NOT NULL,version TEXT NOT NULL,segments TEXT NOT NULL,applicable INTEGER NOT NULL,PRIMARY KEY(server_id,item_id,episode_id));`);
-			this.db.prepare("UPDATE jobs SET status='interrupted' WHERE server_id=? AND status='running'").run(this.serverId);
-			this.db.prepare("UPDATE jobs SET status='queued' WHERE server_id=? AND status='interrupted' AND attempts < 2").run(this.serverId);
+			CREATE TABLE IF NOT EXISTS results(server_id TEXT NOT NULL,item_id TEXT NOT NULL,episode_id TEXT NOT NULL,source_sha TEXT NOT NULL,version TEXT NOT NULL,segments TEXT NOT NULL,applicable INTEGER NOT NULL,status TEXT NOT NULL DEFAULT 'complete',PRIMARY KEY(server_id,item_id,episode_id));`);
+		const columns = this.db.pragma('table_info(results)') as Array<{ name: string }>;
+		if (!columns.some(column => column.name === 'status')) this.db.exec("ALTER TABLE results ADD COLUMN status TEXT NOT NULL DEFAULT 'complete'");
+		this.db.prepare("UPDATE jobs SET status='interrupted' WHERE server_id=? AND status='running'").run(this.serverId);
+		this.db.prepare("UPDATE jobs SET status='queued' WHERE server_id=? AND status='interrupted' AND attempts < 2").run(this.serverId);
 	}
 
 	enabled(itemId: string): boolean {
@@ -55,8 +57,8 @@ export class Store {
 		return this.db.prepare("SELECT id,item_id AS itemId,episode_id AS episodeId,status,attempts,error FROM jobs WHERE id=?").get(result.lastInsertRowid) as Job;
 	}
 	analysis(itemId: string): Record<string, EpisodeResult> {
-		const rows = this.db.prepare("SELECT episode_id,source_sha,version,segments,applicable FROM results WHERE server_id=? AND item_id=?").all(this.serverId, itemId) as Array<{episode_id:string;source_sha:string;version:string;segments:string;applicable:number}>;
-		return Object.fromEntries(rows.map(row => { const valid = Boolean(row.applicable) && this.enabled(itemId); const segments = JSON.parse(row.segments) as Segment[]; return [row.episode_id, { status: valid ? "complete" : "stale", version: row.version, sourceSha256: row.source_sha, segments: valid ? segments : [], adAnalysisEnabled: this.enabled(itemId), applicable: valid }]; }));
+		const rows = this.db.prepare("SELECT episode_id,source_sha,version,segments,applicable,status FROM results WHERE server_id=? AND item_id=?").all(this.serverId, itemId) as Array<{episode_id:string;source_sha:string;version:string;segments:string;applicable:number;status:string}>;
+		return Object.fromEntries(rows.map(row => { const valid = Boolean(row.applicable) && this.enabled(itemId); const segments = JSON.parse(row.segments) as Segment[]; return [row.episode_id, { status: valid ? row.status : "stale", version: row.version, sourceSha256: row.source_sha, segments: valid ? segments : [], adAnalysisEnabled: this.enabled(itemId), applicable: valid }]; }));
 	}
 	jobs(itemId: string): Job[] { return this.db.prepare("SELECT id,item_id AS itemId,episode_id AS episodeId,status,attempts,error FROM jobs WHERE server_id=? AND item_id=? ORDER BY created_at,id").all(this.serverId,itemId) as Job[]; }
 	corpus(itemId: string): object { return { itemId, results: this.analysis(itemId) }; }
@@ -67,7 +69,7 @@ export class Store {
 			if (!Number.isFinite(segment.start) || !Number.isFinite(segment.end) || segment.start < 0 || segment.end <= segment.start || segment.start < end) throw new Error("invalid_segments");
 			end = segment.end;
 		}
-		this.db.prepare("INSERT INTO results VALUES(?,?,?,?,?,?,?) ON CONFLICT(server_id,item_id,episode_id) DO UPDATE SET source_sha=excluded.source_sha,version=excluded.version,segments=excluded.segments,applicable=excluded.applicable").run(this.serverId,itemId,episodeId,result.sourceSha256,result.version,JSON.stringify(result.segments),Number(result.applicable));
+		this.db.prepare("INSERT INTO results(server_id,item_id,episode_id,source_sha,version,segments,applicable,status) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(server_id,item_id,episode_id) DO UPDATE SET source_sha=excluded.source_sha,version=excluded.version,segments=excluded.segments,applicable=excluded.applicable,status=excluded.status").run(this.serverId,itemId,episodeId,result.sourceSha256,result.version,JSON.stringify(result.segments),Number(result.applicable),result.status);
 	}
 	invalidateSource(itemId: string, episodeId: string, sourceSha: string): void {
 		this.db.prepare("UPDATE results SET applicable=0 WHERE server_id=? AND item_id=? AND episode_id=? AND source_sha<>?").run(this.serverId,itemId,episodeId,sourceSha);

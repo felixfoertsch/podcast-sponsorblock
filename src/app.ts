@@ -6,6 +6,7 @@ import type { Store } from './store.js';
 export type AuthEnv = { Variables: { token: string; user: User } };
 export function createApp(stable: Stable, store: Store, corpus?: { inventory(itemId: string, episodeId: string): unknown }) {
 	const app = new Hono<AuthEnv>();
+	const writes = new Map<string, { start: number; count: number }>();
 	app.onError((error, c) => c.json({ error: error instanceof HttpError ? error.message : 'internal_error' }, error instanceof HttpError ? error.status as 401 : 500));
 	app.use('*', async (c, next) => { c.header('Cache-Control', 'no-store'); c.header('X-Content-Type-Options', 'nosniff'); await next(); });
 	app.get('/healthz', c => c.json({ status: 'ok' }));
@@ -17,6 +18,12 @@ export function createApp(stable: Stable, store: Store, corpus?: { inventory(ite
 		const user = await stable.validate(match[1], write);
 		c.set('token', match[1]); c.set('user', user);
 		if (write) {
+			const key = user.id;
+			const now = Date.now();
+			let bucket = writes.get(key);
+			if (!bucket || now - bucket.start >= 60000) { bucket = { start: now, count: 0 }; writes.set(key, bucket); }
+			if (++bucket.count > 60) return c.json({ error: 'rate_limited' }, 429);
+			if (writes.size > 1000) writes.delete(writes.keys().next().value!);
 			if (!permitsAdminWrite(match[1], user)) return c.json({ error: 'forbidden' }, 403);
 			if (!c.req.header('Content-Type')?.startsWith('application/json')) return c.json({ error: 'json_required' }, 415);
 			const origin = c.req.header('Origin');

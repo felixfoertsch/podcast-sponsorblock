@@ -1,9 +1,25 @@
-# Experiment migration report
+# Migration rehearsal
 
-Input: `config-metadata.tar`, backup copy SHA-256 `2d319a88e8a9143f7f29d8589724ec2167f638df6ee48d1386099f4c98c520bb`, 4,067,870,720 bytes. Input was copied to `/private/tmp/opencode/migration-input/config-metadata.tar`; local copy hash matches remote. Remote source: `ffunraid:/mnt/user/appdata/audiobookshelf-experiment-backups/home-feed-rollout-8pqwac0e/config-metadata.tar`. No live experiment path or `ComparisonCorpus.load()` used. Extracted only ABS DB, debug DB, corpus, daily logs, scan logs into private scratch.
+Approved copied backup: `ffunraid:/mnt/user/appdata/audiobookshelf-experiment-backups/home-feed-rollout-8pqwac0e/config-metadata.tar`, 4,067,870,720 bytes. SHA-256 `2d319a88e8a9143f7f29d8589724ec2167f638df6ee48d1386099f4c98c520bb`. Local immutable input copy: `/private/tmp/opencode/migration-input/config-metadata.tar`. No live experiment DB/file access; never called `ComparisonCorpus.load()` on source. Disk checked before copy.
 
-Observed copied source: 21 podcasts, 3,466 podcast episodes, 2,182 corpus entry directories. Database schemas read-only; no writes to copied source. Debug DB contains `notes`, `sub_items`, `sub_item_status`. No stable catalog access attempted: task permitted credentials and GET-only API calls but no credential values/catalog snapshot supplied to this invocation. Thus no mapped/unmatched counts against target; use offline matching inputs.
+Read-only API catalogs: stable service login and experiment `ABS_URL`/`ABS_API_KEY`; secrets read inside processes, never printed. Public API metadata feed field is `media.metadata.feedUrl`, not `media.feedURL`; initial scratch snapshot had empty feeds and was corrected before final matching.
 
-Implementation: `src/migration.ts` creates separate `psb_migration_*` tables and exposes exact feed URL show matching; episode GUID then enclosure matching; conflict when identity keys point at distinct episodes; consent carries only for unique show. All imported segments remain archived and `applicable=0`; SHA-256 proof gate still requires target source hash comparison before any use. Corpus archive supports current v1/v2 manifest versions, stores evidence without modifying originals. Debug records support archive table but source debug-export adapter is not yet implemented. Experiment input adapter in `bin/migrate-experiment` supports a dry-run from approved backup and offline stable-catalog JSON only; persistent migration deliberately blocked pending debug-note/status extraction and hash proof wiring. Reports emit counts/digest, not feed URLs or credentials.
+| Count | Stable | Experiment stand-in |
+|---|---:|---:|
+| Source shows / episodes | 21 / 3466 | 21 / 3466 |
+| Target shows / episodes | 0 / 0 | 21 / 3466 |
+| Matched shows | 0 | 21 |
+| Matched episodes | 0 | 3247 |
+| Ambiguous/conflicting episodes | 0 | 46 |
+| Unmatched episodes | 3466 | 173 |
+| Corpus versions archived | 2182 | 2182 |
+| Debug records archived | 29 | 29 |
+| Applicable imported results | 0 | 0 |
+| Receipts after second run | 1 | 1 |
+| Second run idempotent | true | true |
+| SQLite integrity | ok | ok |
+| Foreign-key violations | 0 | 0 |
 
-Validation: `tests/migration.test.ts` passes 2/2. Backup byte digest matches declared SHA. Source DB inspection confirms tables/counts. In-memory idempotency check yields one receipt, SQLite `integrity_check=ok`, and zero FK violations. Operational dry-run remains unavailable: no stable catalog JSON supplied; endpoint calls and env credential reads not performed. Script accepts `bin/migrate-experiment --input ... --stable-catalog ... --database ... --dry-run` with JSON `{ "shows": [{"id":"...","feedUrl":"..."}], "episodes": [{"id":"...","showId":"...","guid":"...","enclosureUrl":"..."}] }`. Script requires node/tsx and better-sqlite3 already in current install; package manifest already declares `better-sqlite3`; no dependencies requested or manifest edits.
+Stand-in match rate: 3247/3466 = 93.68%; conflicts remain archived rather than guessed. All 21 shows uniquely match. Zero stable matches expected: podcasts not provisioned yet. Rehearsals import into disposable sidecar SQLite only, with all source results non-applicable. Scratch reports: `/private/tmp/opencode/migration-input/{stable,experiment}-report.json`.
+
+Open migration gaps: production CLI still requires hardening for tar member/symlink validation and complete v1/v2 hash validation; migration tables currently archive records but do not bridge mapped consent/results/corpus into runtime tables or rewrite/import debug routes. No cutover import performed. `scripts/rehearse-migration.cjs` reproduces measured archive/idempotency evidence; `bin/migrate-experiment` remains dry-run-only until those gaps close.

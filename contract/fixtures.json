@@ -1,0 +1,10 @@
+{
+	"analysis": {"episodes": {"episode-id": {"status": "stale", "version": "1", "sourceSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "segments": [], "adAnalysisEnabled": true}}},
+	"consent": {"enabled": true},
+	"enqueueRequest": {},
+	"enqueue": {"queued": true},
+	"summary": {"total": 10, "unplayed": 7, "source": "feed"},
+	"recent": {"episodes": [], "limit": 50, "page": 0, "feedUnavailable": false, "feedTruncated": false},
+	"corpus": {"version": 2, "count": 0, "totalBytes": 0, "limitBytes": 10737418240, "collectionPaused": false, "reason": null, "versions": []},
+	"status": {"jobs": []}
+}
