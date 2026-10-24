@@ -8,7 +8,7 @@ COPY . .
 RUN bun run build && bun run test
 
 FROM build AS check
-RUN apk add --no-cache ffmpeg=8.1.2-r0 chromaprint=1.6.0-r0 && node scripts/native-smoke.cjs
+RUN apk add --no-cache ffmpeg=8.1.2-r0 chromaprint=1.6.0-r0 && node scripts/native-smoke.cjs && node --import tsx --test tests/analysis-e2e.test.ts
 
 FROM node:24.21.0-alpine@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 AS runtime
 WORKDIR /app
