@@ -12,3 +12,13 @@ test('candidate classification survives persistence; disabled source never retur
 		assert.throws(()=>store.setResult('i','e',{status:'candidates',version:'1',sourceSha256:'b'.repeat(64),segments:[],adAnalysisEnabled:true,applicable:true}),/analysis_disabled/);
 	}finally{store.close();}
 });
+test('source verification never promotes inconclusive analysis to no_difference',()=>{
+	const store=new Store(':memory:');
+	try{
+		store.setEnabled('i',true);
+		store.setResult('i','e',{status:'inconclusive',version:'1',sourceSha256:'a'.repeat(64),segments:[],adAnalysisEnabled:true,applicable:false});
+		store.verifySource('i','e','a'.repeat(64));
+		assert.equal(store.analysis('i').e.applicable,false);
+		assert.equal(store.jobs('i')[0].status,'queued');
+	}finally{void store.close();}
+});

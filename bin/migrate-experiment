@@ -16,11 +16,12 @@ archive, root = sys.argv[1:]
 allowed = ('config/absdatabase.sqlite', 'config/debug-overlay.sqlite', 'metadata/ad-analysis-corpus/')
 limit = 10 * 1024**3 + 512 * 1024**2
 with tarfile.open(archive, 'r:*') as tar:
-    members = tar.getmembers()
+    members = []
     total = 0
     seen = set()
-    if len(members) > 100000: raise SystemExit('archive_member_count')
-    for m in members:
+    for m in tar:
+        members.append(m)
+        if len(members) > 100000: raise SystemExit('archive_member_count')
         name = m.name
         if name in seen: raise SystemExit('duplicate_archive_path')
         seen.add(name)
@@ -55,10 +56,10 @@ if(fs.existsSync(path.join(root,'config/debug-overlay.sqlite'))){const debug=new
  const notes=debug.prepare('SELECT route_path AS routePath,note,waiting_on AS waitingOn,updated_at AS updatedAt FROM notes').all();
  const subItems=debug.prepare('SELECT id,name,scope_pattern AS scopePattern,created_at AS createdAt FROM sub_items').all();
  const statuses=debug.prepare('SELECT sub_item_id AS subItemId,route_path AS routePath,status,note,updated_at AS updatedAt FROM sub_item_status').all(); input.debugImport={notes,subItems,statuses};debug.close();}
-const {createHash}=await import('node:crypto'); const hash=createHash('sha256'); for await(const chunk of fs.createReadStream(process.env.MIGRATION_INPUT))hash.update(chunk); const bytes=Buffer.from(hash.digest('hex'));
+const {createHash}=await import('node:crypto'); const hash=createHash('sha256'); for await(const chunk of fs.createReadStream(process.env.MIGRATION_INPUT))hash.update(chunk); const archiveSha256=hash.digest('hex'); const bytes=Buffer.from(JSON.stringify({archiveSha256,catalogSha256:m.sha256(fs.readFileSync(process.env.MIGRATION_CATALOG)),serverId:process.env.PSB_STABLE_URL||'https://audiobookshelf.felixfoertsch.de'}));
 const db=m.openMigrationDatabase(process.env.MIGRATION_APPLY==='1'?process.env.MIGRATION_DB:':memory:');
 try {const result=m.migrateCopy(input,catalog.shows,catalog.episodes,db,bytes,{apply:process.env.MIGRATION_APPLY==='1',debugDbPath:process.env.MIGRATION_DEBUG_DB||undefined,serverId:process.env.PSB_STABLE_URL||'https://audiobookshelf.felixfoertsch.de'});
- console.log(JSON.stringify({dryRun:process.env.MIGRATION_APPLY!=='1',digest:result.digest,shows:shows.length,episodes:episodes.length,matches:result.matches.filter(x=>x.stableEpisodeId).length,conflicts:result.matches.filter(x=>x.reason==='conflict').length,unmatched:result.matches.filter(x=>x.reason==='unmatched').length,corpus:fs.readdirSync(input.corpusDir).length,debugImported:result.debugImported,debugArchived:result.debugArchived,resultsImported:result.resultsImported,corpusImported:result.corpusImported,repeated:result.repeated,integrity:db.pragma('integrity_check')[0].integrity_check,foreignKeyViolations:db.pragma('foreign_key_check').length}));
+ console.log(JSON.stringify({dryRun:process.env.MIGRATION_APPLY!=='1',digest:result.digest,archiveSha256,shows:shows.length,episodes:episodes.length,matches:result.matches.filter(x=>x.stableEpisodeId).length,conflicts:result.matches.filter(x=>x.reason==='conflict').length,unmatched:result.matches.filter(x=>x.reason==='unmatched').length,corpus:fs.readdirSync(input.corpusDir).length,debugImported:result.debugImported,debugArchived:result.debugArchived,resultsImported:result.resultsImported,corpusImported:result.corpusImported,repeated:result.repeated,integrity:db.pragma('integrity_check')[0].integrity_check,foreignKeyViolations:db.pragma('foreign_key_check').length}));
 } finally {db.close();old.close();}
 JS
 }
