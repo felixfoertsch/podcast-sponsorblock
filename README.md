@@ -2,6 +2,10 @@
 
 GPL-3.0 sidecar for stock Audiobookshelf. Node + Hono; sidecar-owned SQLite; no stable filesystem or database access. Source provenance: [PROVENANCE.md](PROVENANCE.md).
 
+## 2026-10-25: browser write origins behind frontend proxy
+
+Browser consent and episode-analysis writes previously compared public `Origin` with the proxy's internal request origin, returning `403 {"error":"origin_denied"}`. Set `PSB_ALLOWED_ORIGINS=https://podcast.foertsch.family` (comma-separated exact origins, no paths) to allow this frontend without trusting forwarded headers. Empty configuration preserves same-origin-only browser writes; missing Origin remains allowed. Authentication and admin access-token checks remain required. Regression coverage includes public allowlist, foreign/lookalike/scheme rejection, same-origin and non-browser writes. Debug integration source remains unchanged.
+
 ## Run
 
 `mise install`, `mise exec -- bun install --frozen-lockfile`, `mise exec -- bun run check`, `mise exec -- bun run build`.

@@ -5,7 +5,7 @@ import { Stable, HttpError, permitsAdminWrite, type User } from './stable.js';
 import type { Store } from './store.js';
 export type AuthEnv = { Variables: { token: string; user: User } };
 import { EpisodeResolver } from './identity.js';
-export function createApp(stable: Stable, store: Store, corpus?: { inventory(showKey: string, episodeKey: string): unknown }, resolver = new EpisodeResolver()) {
+export function createApp(stable: Stable, store: Store, corpus?: { inventory(showKey: string, episodeKey: string): unknown }, resolver = new EpisodeResolver(), allowedOrigins: readonly string[] = []) {
 	const observe = async (itemId: string, token: string) => { const item = await stable.item(itemId, token); store.observeResolved(itemId, await resolver.resolve(item)); return item; };
 	const app = new Hono<AuthEnv>();
 	const writes = new Map<string, { start: number; count: number }>();
@@ -29,7 +29,7 @@ export function createApp(stable: Stable, store: Store, corpus?: { inventory(sho
 			if (!permitsAdminWrite(match[1], user)) return c.json({ error: 'forbidden' }, 403);
 			if (!c.req.header('Content-Type')?.startsWith('application/json')) return c.json({ error: 'json_required' }, 415);
 			const origin = c.req.header('Origin');
-			if (origin && origin !== new URL(c.req.url).origin) return c.json({ error: 'origin_denied' }, 403);
+			if (origin && origin !== new URL(c.req.url).origin && !allowedOrigins.includes(origin)) return c.json({ error: 'origin_denied' }, 403);
 		}
 		await next();
 	});

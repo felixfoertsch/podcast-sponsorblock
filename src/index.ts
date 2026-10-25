@@ -23,7 +23,7 @@ async function main() {
 	const resolver = new EpisodeResolver();
 	const store = new Store(join(env.PSB_DATA_DIR, 'sidecar.sqlite'), { scheduler: reconciler(stable, credential, resolver) });
 	const corpus = new AnalysisCorpus(join(env.PSB_DATA_DIR, 'sidecar.sqlite'));
-	const app = createApp(stable, store, corpus, resolver);
+	const app = createApp(stable, store, corpus, resolver, env.PSB_ALLOWED_ORIGINS);
 	app.route('/', createFeedRoutes(stable));
 	const debug = createDebugRoutes(stable, env.PSB_DATA_DIR);
 	app.route('/api/debug', debug);
