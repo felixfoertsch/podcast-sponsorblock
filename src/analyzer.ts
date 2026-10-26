@@ -148,7 +148,7 @@ export async function analyzeCandidates(input: { sourcePath: string; sourceSha25
 		out.status = out.segments.length ? "candidates" : compared ? "no_difference" : out.catalogs.length && out.catalogs.every((c) => ["empty", "no_matching_episode"].includes(String(c.status))) ? "unsupported" : "inconclusive";
 		out.reason = out.segments.length ? "candidate_insertions_not_advertising_proof" : out.status === "no_difference" ? "no_inserted_audio" : out.status === "unsupported" ? "no_matching_episode" : fingerprints.size < 2 ? "insufficient_diversity" : "no_safe_candidates";
 		return out;
-	} catch (error) { out.status = "failed"; out.reason = error instanceof Error ? error.message : "analysis_failed"; out.segments = []; return out; }
+	} catch (error) { out.status = "failed"; out.reason = (error instanceof Error ? error.message : "analysis_failed").slice(0, 249); out.segments = []; return out; }
 	finally {
 		await rm(dir, { recursive: true, force: true });
 		const after = await stat(sourcePath).catch(() => null);

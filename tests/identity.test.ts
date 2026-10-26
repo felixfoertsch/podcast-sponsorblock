@@ -29,6 +29,20 @@ test("resolves changed ABS episode IDs against parsed RSS GUID and preserves key
 	assert.equal(first.episodes[0].identity, '["3",10,1]');
 });
 
+test("resolves downloaded episodes without local guid/enclosure from unique feed title/date", async () => {
+	const { EpisodeResolver } = await import("../src/identity");
+	const resolver = new EpisodeResolver(async () => Buffer.from("<rss><channel><item><title>Loose</title><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><enclosure url='https://cdn.example/a.mp3'/></item></channel></rss>"));
+	const result = await resolver.resolve({ media: { feedURL: "https://example.com/feed", episodes: [{ id: "ep", title: "Loose", publishedAt: Date.parse("2024-01-01T00:00:00Z"), audioFile: { ino: 1, metadata: { size: 10, mtimeMs: 1 } } }] } });
+	assert.equal(result.episodes[0]?.episodeKey, '["https://example.com/feed","https://cdn.example/a.mp3"]');
+});
+
+test("matches punctuation-only title changes for downloaded episodes without RSS identifiers", async () => {
+	const { EpisodeResolver } = await import("../src/identity");
+	const resolver = new EpisodeResolver(async () => Buffer.from("<rss><channel><item><guid>rss-guid</guid><title>Introducing... Uncharted with Hannah Fry</title><pubDate>Mon, 18 Sep 2023 07:50:00 GMT</pubDate><enclosure url='https://cdn.example/a.mp3'/></item></channel></rss>"));
+	const result = await resolver.resolve({ media: { feedURL: "https://example.com/feed", episodes: [{ id: "ep", title: "Introducing Uncharted - with Hannah Fry", publishedAt: Date.parse("2023-09-18T07:50:00Z") }] } });
+	assert.equal(result.episodes[0]?.episodeKey, '["https://example.com/feed","rss-guid"]');
+});
+
 test("uses normalized enclosure fallback when RSS GUID absent", async () => {
 	const { EpisodeResolver } = await import("../src/identity");
 	const resolver = new EpisodeResolver(async () => Buffer.from("<rss><channel><item><title>Loose</title><enclosure url='https://cdn.example/a.mp3'/></item></channel></rss>"));

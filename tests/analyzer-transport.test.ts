@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { catalogEndpoint, catalogResults } from "../src/analyzerTransport";
+import { catalogEndpoint, catalogResults, parseFeed } from "../src/analyzerTransport";
+
+test("RSS XML entities decode before episode matching and enclosure requests", async () => {
+	const episodes = await parseFeed('<rss><channel><item><title>Migration Motors &amp; Music</title><guid>g&amp;1</guid><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><enclosure url="https://cdn.example/a?x=1&amp;y=2"/></item></channel></rss>', 'https://feed.example/rss');
+	assert.equal(episodes[0].title, 'Migration Motors & Music');
+	assert.equal(episodes[0].guid, 'g&1');
+	assert.equal(episodes[0].enclosure.url, 'https://cdn.example/a?x=1&y=2');
+});
 
 test("gpodder default search result list is accepted and capped to five candidates", () => {
 	const rows = Array.from({ length: 12 }, (_, i) => ({ url: `https://example.com/${i}`, title: `Podcast ${i}` }));

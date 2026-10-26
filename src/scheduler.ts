@@ -23,7 +23,7 @@ export function reconciler(stable: Stable, credential: Credential, resolver: Epi
 				if (!store.enabled(row.id)) continue;
 				const media = { episodes: resolved.episodes.filter(e => e.identity) };
 				// One admission/show/pass avoids large shows starving remaining shows.
-				const known = new Set(store.jobs(row.id).map(j => j.episodeId));
+				const known = new Set(store.jobs(row.id).filter(j => j.status !== 'cancelled').map(j => j.episodeId));
 				const next = media.episodes.find(e => !known.has(e.id));
 				if (next) { try { store.enqueue(row.id, next.id, 0); } catch (error) { if (error instanceof Error && error.message === 'queue_full') return; throw error; } }
 			}

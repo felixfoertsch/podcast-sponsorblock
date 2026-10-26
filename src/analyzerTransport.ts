@@ -1,4 +1,5 @@
 import axios from "axios";
+import { parseStringPromise } from "xml2js";
 import ssrfFilter from "ssrf-req-filter";
 import analysisProxy from "../vendor/adAnalysisProxy.js";
 
@@ -57,6 +58,18 @@ export async function request(url: string, limit = 2 * 1024 * 1024, timeout = 10
 	throw new Error("redirect_limit");
 }
 
+export async function parseFeed(xml: string, url: string): Promise<EpisodeLike[]> {
+	if (/<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error('unsafe_xml');
+	const parsed = await parseStringPromise(xml, { explicitArray: false, trim: true });
+	const rows = parsed?.rss?.channel?.item ?? [];
+	return (Array.isArray(rows) ? rows : [rows]).flatMap(row => {
+		const enclosure = row.enclosure?.$?.url;
+		if (typeof enclosure !== 'string') return [];
+		const scalar = (value: unknown): string | undefined => typeof value === 'string' ? value : value && typeof value === 'object' && '_' in value && typeof value._ === 'string' ? value._ : undefined;
+		return [{ guid: scalar(row.guid), title: scalar(row.title), publishedAt: scalar(row.pubDate ?? row.published), enclosure: { url: new URL(enclosure, url).href } }];
+	});
+}
+
 export const transport = {
 	get: request,
 	async candidates(provider: "apple" | "gpodder", item: CatalogItem, signal: AbortSignal) {
@@ -65,17 +78,6 @@ export const transport = {
 	},
 	async fetchFeed(url: string, signal: AbortSignal): Promise<EpisodeLike[]> {
 		const { data } = await request(url, MAX_FEED_BYTES, 10_000, signal);
-		const xml = data.toString("utf8");
-		const episodes: EpisodeLike[] = [];
-		for (const match of xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)) {
-			const body = match[1];
-			const enclosure = body.match(/<enclosure\b[^>]*\burl=["']([^"']+)["'][^>]*>/i)?.[1];
-			if (!enclosure) continue;
-			const guid = body.match(/<guid\b[^>]*>([\s\S]*?)<\/guid>/i)?.[1]?.trim();
-			const title = body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, "").trim();
-			const publishedAt = body.match(/<(?:pubDate|published)\b[^>]*>([\s\S]*?)<\/(?:pubDate|published)>/i)?.[1]?.trim();
-			episodes.push({ guid, title, publishedAt, enclosure: { url: new URL(enclosure, url).href } });
-		}
-		return episodes;
+		return parseFeed(data.toString('utf8'), url);
 	},
 };

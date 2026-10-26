@@ -18,6 +18,10 @@ test('enqueue fetches authorized fixture, runs real detector, persists corpus an
 	const dir=mkdtempSync(join(tmpdir(),'psb-e2e-')), audio=join(dir,'audio.mp3'),store=new Store(join(dir,'runtime.sqlite')),corpus=new AnalysisCorpus(join(dir,'runtime.sqlite'));
 	try{
 		execFileSync('ffmpeg',['-nostdin','-v','error','-f','lavfi','-i','sine=frequency=440:duration=60','-c:a','libmp3lame',audio]);
+		const failed = await analyzeCandidates({ sourcePath: audio, duration: 60, itemId: 'i', episodeId: 'e', episode: {}, item: { title: 'Show' }, corpus, signal: new AbortController().signal, env: { FPCALC_PATH: '/missing/' + 'x'.repeat(300) }, transport: { candidates: async () => [], fetchFeed: async () => [], get: async () => { throw Error('unexpected'); } } });
+		assert.equal(failed.status, 'failed');
+		assert.ok(failed.reason && failed.reason.length <= 249);
+		store.setContent('a'.repeat(64), { status: `failed:${failed.reason}`, segments: [] });
 		const bytes=readFileSync(audio);let sourceGets=0;
 		const episode={id:'e',title:'Episode',guid:'g',publishedAt:'2026-01-01',duration:60,audioFile:{ino:'1',metadata:{size:bytes.length,mtimeMs:1}},enclosure:{url:'https://audio.example/source.mp3'}};
 		const fetcher:typeof fetch=async url=>{

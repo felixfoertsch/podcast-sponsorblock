@@ -16,5 +16,5 @@ export const paths = {
 	analysis:'/api/items/:itemId/analysis', status:'/api/items/:itemId/analysis/status',
 	consent:'/api/podcasts/:itemId/ad-analysis', enqueue:'/api/podcasts/:itemId/episode/:episodeId/ad-analysis',
 	corpus:'/api/podcasts/:itemId/episode/:episodeId/ad-analysis/corpus',
-	summary:'/api/podcasts/:itemId/episode-summary', recent:'/api/libraries/:id/recent-episodes?includeFeed=1', debug:'/api/debug',
+	summary:'/api/podcasts/:itemId/episode-summary', recent:'/api/libraries/:id/recent-episodes?includeFeed=1',
 } as const;

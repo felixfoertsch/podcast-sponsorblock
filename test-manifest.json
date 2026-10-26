@@ -472,22 +472,22 @@
       "sourcePath": "test/server/debugHost.test.js",
       "caseCount": 2,
       "disposition": "missing-sidecar",
-      "destination": "tests/debug.test.ts",
-      "limitation": "partial debug behavior replacement; not full host integration",
+      "destination": null,
+      "limitation": "not ported; frontend ownership",
       "tests": [
         {
           "name": "derives canonical routes from projected data, excluding missing entities and other users playlists",
           "sourceLine": 20,
           "disposition": "missing-sidecar",
-          "destination": "tests/debug.test.ts",
-          "limitation": "partial debug behavior replacement; not full host integration"
+          "destination": null,
+          "limitation": "not ported; frontend ownership"
         },
         {
           "name": "requires fresh active admin/root state for every HTTP method, independent of supplied role",
           "sourceLine": 73,
           "disposition": "missing-sidecar",
-          "destination": "tests/debug.test.ts",
-          "limitation": "partial debug behavior replacement; not full host integration"
+          "destination": null,
+          "limitation": "not ported; frontend ownership"
         }
       ]
     },
@@ -495,15 +495,15 @@
       "sourcePath": "test/server/debugJwt.test.js",
       "caseCount": 1,
       "disposition": "missing-sidecar",
-      "destination": "tests/debug.test.ts",
-      "limitation": "partial debug behavior replacement; not full JWT integration",
+      "destination": null,
+      "limitation": "not ported; frontend ownership",
       "tests": [
         {
           "name": "checks JWT signature before fresh DB role for every method, including revocation behind cached identity",
           "sourceLine": 17,
           "disposition": "missing-sidecar",
-          "destination": "tests/debug.test.ts",
-          "limitation": "partial debug behavior replacement; not full JWT integration"
+          "destination": null,
+          "limitation": "not ported; frontend ownership"
         }
       ]
     },
@@ -511,15 +511,15 @@
       "sourcePath": "test/server/debugOverlay.test.js",
       "caseCount": 1,
       "disposition": "missing-sidecar",
-      "destination": "tests/debug.test.ts",
-      "limitation": "partial debug behavior replacement; not full overlay integration",
+      "destination": null,
+      "limitation": "not ported; frontend ownership",
       "tests": [
         {
           "name": "persists notes across close/reopen and fails closed without affecting health",
           "sourceLine": 11,
           "disposition": "missing-sidecar",
-          "destination": "tests/debug.test.ts",
-          "limitation": "partial debug behavior replacement; not full overlay integration"
+          "destination": null,
+          "limitation": "not ported; frontend ownership"
         }
       ]
     },
@@ -527,15 +527,15 @@
       "sourcePath": "test/server/debugShutdown.test.js",
       "caseCount": 1,
       "disposition": "missing-sidecar",
-      "destination": "tests/debug.test.ts",
-      "limitation": "partial debug behavior replacement; not full shutdown integration",
+      "destination": null,
+      "limitation": "not ported; frontend ownership",
       "tests": [
         {
           "name": "waits for HTTP drain before closing debug SQLite",
           "sourceLine": 9,
           "disposition": "missing-sidecar",
-          "destination": "tests/debug.test.ts",
-          "limitation": "partial debug behavior replacement; not full shutdown integration"
+          "destination": null,
+          "limitation": "not ported; frontend ownership"
         }
       ]
     },

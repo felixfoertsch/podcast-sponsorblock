@@ -24,10 +24,10 @@ const sidecar = {
   'test/server/utils/adCatalogMatching.test.js': ['tests/fixtures/adCatalogMatching.json', 'partial fixture mapping only; no equivalent executable suite'],
   'test/server/utils/PodcastRecency.test.js': [null, 'missing sidecar test; no direct replacement identified'],
   'test/server/models/oldJsonSerialization.test.js': [null, 'missing sidecar test; no direct replacement identified'],
-  'test/server/debugHost.test.js': ['tests/debug.test.ts', 'partial debug behavior replacement; not full host integration'],
-  'test/server/debugOverlay.test.js': ['tests/debug.test.ts', 'partial debug behavior replacement; not full overlay integration'],
-  'test/server/debugShutdown.test.js': ['tests/debug.test.ts', 'partial debug behavior replacement; not full shutdown integration'],
-  'test/server/debugJwt.test.js': ['tests/debug.test.ts', 'partial debug behavior replacement; not full JWT integration'],
+  'test/server/debugHost.test.js': [null, 'not ported; frontend ownership'],
+  'test/server/debugOverlay.test.js': [null, 'not ported; frontend ownership'],
+  'test/server/debugShutdown.test.js': [null, 'not ported; frontend ownership'],
+  'test/server/debugJwt.test.js': [null, 'not ported; frontend ownership'],
   'test/server/controllers/LibraryRecentEpisodes.test.js': [null, 'missing sidecar test; no direct replacement identified'],
 };
 

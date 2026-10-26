@@ -2,6 +2,16 @@
 
 GPL-3.0 sidecar for stock Audiobookshelf. Node + Hono; sidecar-owned SQLite; no stable filesystem or database access. Source provenance: [PROVENANCE.md](PROVENANCE.md).
 
+## 2026-10-26: first-pass review and frontend debug ownership
+
+Read-only baseline: 3466 stable episodes; 3293 cached. All 173 omitted episodes have audio but lack local GUID/enclosure: 172 absent by normalized title from current feeds, one punctuation-only title mismatch recovered by unique title/date lookup. Another 90 cached episodes lacked a hash at review (18 failed, two cancelled, 70 awaiting fair one-per-show admissions); scheduler continued progressing, not stalled. Cancelled jobs now become eligible again after consent is re-enabled.
+
+Failed jobs: 13 duration ≥14400 s, two <50 s, two source byte limits (256 MiB), one source timeout, one overlong analyzer error exceeding result status limit. Bounds stay unchanged; analyzer errors now bounded before storage. Detector remains byte-identical.
+
+Twelve samples per unusable class span shows. Corpus counts: `no_matching_episode` 388 with zero copies / three with one; `no_safe_candidates` 147 with one; `insufficient_diversity` 37 with zero / one with one. RSS regex left XML entities encoded in titles and enclosure queries; proper existing XML parser fixes matching and signed/query URLs without changing detector logic. Unique decoded feed matches identify scoped retry candidates; no automatic periodic retry exists for completed unusable content. New feed variants could help, but current result cache otherwise short-circuits analysis. Job records contain enqueue times, not execution start/end, so exact throughput attribution from job timings is unavailable.
+
+Removed sidecar debug source, mount, dependency, tests and contract entry. Frontend owns `/debug-api` and its database; old sidecar `debug-overlay.sqlite` remains untouched. Frontend tracked source has no `/psb/api/debug` call; obsolete prose in `compatibility.md` and unused contract/mock entries remain frontend-owned. Regression tests cover decoded XML entities, missing local RSS identity, punctuation-only title lookup, cancelled-job admission and bounded analyzer errors.
+
 ## 2026-10-25: browser write origins behind frontend proxy
 
 Browser consent and episode-analysis writes previously compared public `Origin` with the proxy's internal request origin, returning `403 {"error":"origin_denied"}`. Set `PSB_ALLOWED_ORIGINS=https://podcast.foertsch.family` (comma-separated exact origins, no paths) to allow this frontend without trusting forwarded headers. Empty configuration preserves same-origin-only browser writes; missing Origin remains allowed. Authentication and admin access-token checks remain required. Regression coverage includes public allowlist, foreign/lookalike/scheme rejection, same-origin and non-browser writes. Debug integration source remains unchanged.

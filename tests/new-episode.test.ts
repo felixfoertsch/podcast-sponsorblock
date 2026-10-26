@@ -27,5 +27,9 @@ test('scheduler discovers new downloaded RSS episode without browser request', a
 		await reconcile(store, new AbortController().signal);
 		assert.equal(store.jobs('abs-item').find(j => j.episodeId === 'new')?.status, 'queued');
 		assert.equal(store.resolution('abs-item', 'new')?.episodeKey, '["portable-show","new-rss"]');
+		store.setEnabled('abs-item', false);
+		store.setEnabled('abs-item', true);
+		await reconcile(store, new AbortController().signal);
+		assert.equal(store.jobs('abs-item').find(j => j.episodeId === 'old')?.status, 'queued');
 	} finally { await store.close(); }
 });

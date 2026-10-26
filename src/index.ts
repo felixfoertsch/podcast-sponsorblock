@@ -13,7 +13,6 @@ import { AnalysisCorpus } from './corpus.js';
 import { transport } from './analyzerTransport.js';
 import { reconciler } from './scheduler.js';
 import { createFeedRoutes } from './feed-routes.js';
-import { createDebugRoutes } from './debug-server.js';
 import { EpisodeResolver } from './identity.js';
 
 async function main() {
@@ -25,8 +24,6 @@ async function main() {
 	const corpus = new AnalysisCorpus(join(env.PSB_DATA_DIR, 'sidecar.sqlite'));
 	const app = createApp(stable, store, corpus, resolver, env.PSB_ALLOWED_ORIGINS);
 	app.route('/', createFeedRoutes(stable));
-	const debug = createDebugRoutes(stable, env.PSB_DATA_DIR);
-	app.route('/api/debug', debug);
 	void store.start(async (job, signal) => {
 		const bounded = AbortSignal.any([signal, AbortSignal.timeout(20 * 60 * 1000)]);
 		if (!store.enabled(job.itemId)) throw new Error('consent_required');
@@ -57,6 +54,6 @@ async function main() {
 	});
 	if (env.PSB_SCHEDULER_ENABLED === '1') store.startScheduler();
 	const server = serve({ fetch: app.fetch, port: env.PORT });
-	for (const signal of ['SIGTERM', 'SIGINT'] as const) process.once(signal, () => { store.stop(); server.close(() => { void store.close().then(() => { debug.close(); corpus.close(); process.exit(0); }); }); });
+	for (const signal of ['SIGTERM', 'SIGINT'] as const) process.once(signal, () => { store.stop(); server.close(() => { void store.close().then(() => { corpus.close(); process.exit(0); }); }); });
 }
 void main().catch(() => { console.error('startup_failed'); process.exitCode = 1; });

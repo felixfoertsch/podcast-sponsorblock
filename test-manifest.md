@@ -20,6 +20,6 @@ Copied/adapted suites preserve these limitations:
 - `test/server/utils/daiAnalysis.test.js` -> `tests/daiAnalysis.test.js`: vendor matching/alignment safety assertions; ABS manager integration omitted.
 - `test/server/utils/daiNativeSafety.test.js` -> `tests/daiNativeSafety.test.js`: portable boundary + native version check.
 
-JSON marks sidecar suites including `PodcastAdAnalysis`, `PodcastEpisodeSummary`, `adAnalysisDiagnostics`, `adAnalysisPublicResult`, `adComparisonPublication`, `adCatalogMatching`, `LibraryRecentEpisodes`, debug host/overlay/shutdown/JWT, `PodcastRecency`, and `oldJsonSerialization` as `missing-sidecar`, with per-suite replacement or gap detail. Partial test mappings are not full replacements; absent executable replacements remain explicit gaps.
+JSON marks sidecar suites including `PodcastAdAnalysis`, `PodcastEpisodeSummary`, `adAnalysisDiagnostics`, `adAnalysisPublicResult`, `adComparisonPublication`, `adCatalogMatching`, `LibraryRecentEpisodes`, debug host/overlay/shutdown/JWT (not ported; frontend ownership), `PodcastRecency`, and `oldJsonSerialization` as `missing-sidecar`, with per-suite replacement or gap detail. Partial test mappings are not full replacements; absent executable replacements remain explicit gaps.
 
 The JSON generator reads sibling `../audiobookshelf/test` and writes `test-manifest.json` only: `node scripts/test-manifest.cjs`. It does not modify source checkout. Runtime counts are evidence from `bun run test`; generator preserves those recorded counts and does not claim to execute tests.

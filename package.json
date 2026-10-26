@@ -14,7 +14,6 @@
 		"@hono/node-server": "^2.1.5",
 		"axios": "0.27.2",
 		"better-sqlite3": "^13.0.3",
-		"debug-overlay": "https://git.felixfoertsch.de/felixfoertsch/debug-overlay/releases/download/v2026.10.21.2/debug-overlay-2026.10.21.2.tgz",
 		"hono": "4.12.9",
 		"ipaddr.js": "1.9.1",
 		"ssrf-req-filter": "1.1.0",
